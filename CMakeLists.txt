@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.13)
+project(cchess VERSION 0.0.1 LANGUAGES C)
+file(GLOB SOURCES src/*.c)
+file(GLOB HEADERS include/*.h)
+include_directories(include)
+add_executable(cchess ${SOURCES} ${HEADERS})
+set(CMAKE_C_FLAGS_DEBUG "-g -DDEBUG")
+target_link_libraries(cchess m)
