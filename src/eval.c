@@ -7,9 +7,9 @@
 #define VALUE_QUEEN 900
 #define VALUE_KING 20000
 
-centipawns_t _eval_material(board_t *board, side_t side);
+centipawns_t _eval_material(const board_t *board, side_t side);
 
-centipawns_t eval(board_t *board)
+centipawns_t eval(const board_t *board)
 {
     centipawns_t score = 0;
 
@@ -20,7 +20,7 @@ centipawns_t eval(board_t *board)
     return score;
 }
 
-centipawns_t _eval_material(board_t *board, side_t side)
+centipawns_t _eval_material(const board_t *board, side_t side)
 {
     centipawns_t material_value = 0;
 
@@ -28,7 +28,7 @@ centipawns_t _eval_material(board_t *board, side_t side)
     {
         for (int rank = RANK_1; rank <= RANK_8; rank++)
         {
-            piece_t piece = board->board[file][rank];
+            piece_t piece = board_get(board, file, rank);
             if (!(piece & side))
                 continue;
             if (piece & PIECE_PAWN)

@@ -14,33 +14,33 @@
 
 void board_init(board_t *board)
 {
-    board->board[FILE_A][RANK_1] = PIECE_ROOK | SIDE_WHITE;
-    board->board[FILE_B][RANK_1] = PIECE_KNIGHT | SIDE_WHITE;
-    board->board[FILE_C][RANK_1] = PIECE_BISHOP | SIDE_WHITE;
-    board->board[FILE_D][RANK_1] = PIECE_QUEEN | SIDE_WHITE;
-    board->board[FILE_E][RANK_1] = PIECE_KING | SIDE_WHITE;
-    board->board[FILE_F][RANK_1] = PIECE_BISHOP | SIDE_WHITE;
-    board->board[FILE_G][RANK_1] = PIECE_KNIGHT | SIDE_WHITE;
-    board->board[FILE_H][RANK_1] = PIECE_ROOK | SIDE_WHITE;
+    board->pieces[FILE_A][RANK_1] = PIECE_ROOK | SIDE_WHITE;
+    board->pieces[FILE_B][RANK_1] = PIECE_KNIGHT | SIDE_WHITE;
+    board->pieces[FILE_C][RANK_1] = PIECE_BISHOP | SIDE_WHITE;
+    board->pieces[FILE_D][RANK_1] = PIECE_QUEEN | SIDE_WHITE;
+    board->pieces[FILE_E][RANK_1] = PIECE_KING | SIDE_WHITE;
+    board->pieces[FILE_F][RANK_1] = PIECE_BISHOP | SIDE_WHITE;
+    board->pieces[FILE_G][RANK_1] = PIECE_KNIGHT | SIDE_WHITE;
+    board->pieces[FILE_H][RANK_1] = PIECE_ROOK | SIDE_WHITE;
 
     for (int file = FILE_A; file <= FILE_H; file++)
-        board->board[file][RANK_2] = PIECE_PAWN | SIDE_WHITE;
+        board->pieces[file][RANK_2] = PIECE_PAWN | SIDE_WHITE;
 
-    board->board[FILE_A][RANK_8] = PIECE_ROOK | SIDE_BLACK;
-    board->board[FILE_B][RANK_8] = PIECE_KNIGHT | SIDE_BLACK;
-    board->board[FILE_C][RANK_8] = PIECE_BISHOP | SIDE_BLACK;
-    board->board[FILE_D][RANK_8] = PIECE_QUEEN | SIDE_BLACK;
-    board->board[FILE_E][RANK_8] = PIECE_KING | SIDE_BLACK;
-    board->board[FILE_F][RANK_8] = PIECE_BISHOP | SIDE_BLACK;
-    board->board[FILE_G][RANK_8] = PIECE_KNIGHT | SIDE_BLACK;
-    board->board[FILE_H][RANK_8] = PIECE_ROOK | SIDE_BLACK;
+    board->pieces[FILE_A][RANK_8] = PIECE_ROOK | SIDE_BLACK;
+    board->pieces[FILE_B][RANK_8] = PIECE_KNIGHT | SIDE_BLACK;
+    board->pieces[FILE_C][RANK_8] = PIECE_BISHOP | SIDE_BLACK;
+    board->pieces[FILE_D][RANK_8] = PIECE_QUEEN | SIDE_BLACK;
+    board->pieces[FILE_E][RANK_8] = PIECE_KING | SIDE_BLACK;
+    board->pieces[FILE_F][RANK_8] = PIECE_BISHOP | SIDE_BLACK;
+    board->pieces[FILE_G][RANK_8] = PIECE_KNIGHT | SIDE_BLACK;
+    board->pieces[FILE_H][RANK_8] = PIECE_ROOK | SIDE_BLACK;
 
     for (int file = FILE_A; file <= FILE_H; file++)
-        board->board[file][RANK_7] = PIECE_PAWN | SIDE_BLACK;
+        board->pieces[file][RANK_7] = PIECE_PAWN | SIDE_BLACK;
 
     for (int file = FILE_A; file <= FILE_H; file++)
         for (int rank = RANK_3; rank <= RANK_6; rank++)
-            board->board[file][rank] = PIECE_NONE;
+            board->pieces[file][rank] = PIECE_NONE;
 
     board->side_to_move = SIDE_WHITE;
     board->white_castling_rights = CASTLING_RIGHTS_KINGSIDE | CASTLING_RIGHTS_QUEENSIDE;
@@ -64,7 +64,7 @@ void board_print(board_t *board, FILE *stream)
 
         for (int file = FILE_A; file <= FILE_H; file++)
         {
-            piece_t piece = board->board[file][rank];
+            piece_t piece = board->pieces[file][rank];
             char piece_char = SYMBOL_NONE;
             if (piece & PIECE_PAWN)
                 piece_char = SYMBOL_PAWN;
@@ -94,9 +94,14 @@ void board_print(board_t *board, FILE *stream)
     fputs(FILE_LEGEND, stream);
 }
 
-piece_t board_get(board_t *board, int file, int rank)
+piece_t board_get(const board_t *board, int file, int rank)
 {
-    return board->board[file][rank];
+    return board->pieces[file][rank];
+}
+
+void board_set(board_t *board, int file, int rank, piece_t piece)
+{
+    board->pieces[file][rank] = piece;
 }
 
 void board_make_move(board_t *board, move_t move)
@@ -106,9 +111,9 @@ void board_make_move(board_t *board, move_t move)
     int to_file = move_get_to_file(move);
     int to_rank = move_get_to_rank(move);
 
-    piece_t piece_to_move = board->board[from_file][from_rank];
-    piece_t piece_on_target_square = board->board[to_file][to_rank];
+    piece_t piece_to_move = board->pieces[from_file][from_rank];
+    piece_t piece_on_target_square = board->pieces[to_file][to_rank];
     
-    board->board[from_file][from_rank] = PIECE_NONE;
-    board->board[to_file][to_rank] = piece_to_move;
+    board->pieces[from_file][from_rank] = PIECE_NONE;
+    board->pieces[to_file][to_rank] = piece_to_move;
 }

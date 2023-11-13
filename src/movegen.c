@@ -1,24 +1,24 @@
 #include "movegen.h"
 #include "side.h"
 
-void _movegen_generate_pawn_moves(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
-void _movegen_generate_white_pawn_pushes(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
-void _movegen_generate_white_pawn_captures(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
-void _movegen_generate_black_pawn_pushes(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
-void _movegen_generate_black_pawn_captures(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
+void _movegen_generate_pawn_moves(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
+void _movegen_generate_white_pawn_pushes(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
+void _movegen_generate_white_pawn_captures(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
+void _movegen_generate_black_pawn_pushes(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
+void _movegen_generate_black_pawn_captures(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
 
-void _movegen_generate_knight_moves(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
-void _movegen_generate_bishop_moves(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
-void _movegen_generate_rook_moves(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
-void _movegen_generate_queen_moves(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
+void _movegen_generate_knight_moves(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
+void _movegen_generate_bishop_moves(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
+void _movegen_generate_rook_moves(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
+void _movegen_generate_queen_moves(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
 
-void _movegen_generate_king_moves(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
-void _movegen_generate_king_regular(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
-void _movegen_generate_king_castling(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
+void _movegen_generate_king_moves(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
+void _movegen_generate_king_regular(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
+void _movegen_generate_king_castling(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file);
 
-void _movegen_add_if_target_empty_or_enemy(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file, int target_rank, int target_file);
+void _movegen_add_if_target_empty_or_enemy(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file, int target_rank, int target_file);
 
-void movegen_generate(board_t *board, move_t *out_moves, int *out_move_count)
+void movegen_generate(const board_t *board, move_t *out_moves, int *out_move_count)
 {
     *out_move_count = 0;
     side_t side = board->side_to_move;
@@ -46,7 +46,7 @@ void movegen_generate(board_t *board, move_t *out_moves, int *out_move_count)
         }
 }
 
-void _movegen_generate_pawn_moves(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file)
+void _movegen_generate_pawn_moves(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file)
 {
     piece_t pawn = board_get(board, file, rank);
     if (pawn & SIDE_WHITE)
@@ -61,7 +61,7 @@ void _movegen_generate_pawn_moves(board_t *board, move_t *out_moves, int *out_mo
     }
 }
 
-void _movegen_generate_knight_moves(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file)
+void _movegen_generate_knight_moves(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file)
 {
     _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, rank, file, rank + 2, file + 1);
     _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, rank, file, rank + 2, file - 1);
@@ -73,23 +73,23 @@ void _movegen_generate_knight_moves(board_t *board, move_t *out_moves, int *out_
     _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, rank, file, rank - 1, file - 2);
 }
 
-void _movegen_generate_bishop_moves(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file)
+void _movegen_generate_bishop_moves(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file)
 {
 }
 
-void _movegen_generate_rook_moves(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file)
+void _movegen_generate_rook_moves(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file)
 {
 }
 
-void _movegen_generate_queen_moves(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file)
+void _movegen_generate_queen_moves(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file)
 {
 }
 
-void _movegen_generate_king_moves(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file)
+void _movegen_generate_king_moves(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file)
 {
 }
 
-void _movegen_generate_white_pawn_pushes(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file)
+void _movegen_generate_white_pawn_pushes(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file)
 {
     if (rank == RANK_2)
     {
@@ -139,7 +139,7 @@ void _movegen_generate_white_pawn_pushes(board_t *board, move_t *out_moves, int 
     }
 }
 
-void _movegen_add_if_target_empty_or_enemy(board_t *board, move_t *out_moves, int *out_move_count, int rank, int file, int target_rank, int target_file)
+void _movegen_add_if_target_empty_or_enemy(const board_t *board, move_t *out_moves, int *out_move_count, int rank, int file, int target_rank, int target_file)
 {
     if (target_rank >= RANK_1 && target_rank <= RANK_8 && target_file >= FILE_A && target_file <= FILE_H)
     {

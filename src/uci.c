@@ -39,14 +39,12 @@
 #define COMMAND_QUIT "quit"
 #define RESPONSE_QUIT "bye"
 
-#define DEBUG
-
 void reply(const char *response)
 {
     fputs(response, stdout);
     fputc('\n', stdout);
     fflush(stdout);
-#ifdef DEBUG
+#ifdef CCHESS_DEBUG
     fputs(">>> ", stderr);
     fputs(response, stderr);
     fputc('\n', stderr);
@@ -66,7 +64,7 @@ int uci_loop()
     {
         input[strlen(input) - 1] = '\0';
 
-#ifdef DEBUG
+#ifdef CCHESS_DEBUG
         fputs("... ", stderr);
         fputs(input, stderr);
         fputc('\n', stderr);

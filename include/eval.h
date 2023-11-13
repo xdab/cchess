@@ -13,6 +13,6 @@ typedef int centipawns_t;
  * @param board The board to evaluate.
  * @return The evaluation of the board in centipawns.
  */
-centipawns_t eval(board_t *board);
+centipawns_t eval(const board_t *board);
 
 #endif

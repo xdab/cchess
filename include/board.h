@@ -35,7 +35,7 @@
 
 typedef struct board
 {
-    piece_t board[FILE_COUNT][RANK_COUNT];
+    piece_t pieces[FILE_COUNT][RANK_COUNT];
     side_t side_to_move;
     castling_rights_t white_castling_rights;
     castling_rights_t black_castling_rights;
@@ -68,7 +68,17 @@ void board_print(board_t *board, FILE *stream);
  * @param rank The rank of the square.
  * @return The piece at the specified square.
  */
-piece_t board_get(board_t *board, int file, int rank);
+piece_t board_get(const board_t *board, int file, int rank);
+
+/**
+ * Sets the piece at the specified square.
+ *
+ * @param board The board to set the piece on.
+ * @param file The file of the square.
+ * @param rank The rank of the square.
+ * @param piece The piece to set.
+ */
+void board_set(board_t *board, int file, int rank, piece_t piece);
 
 /**
  * Moves a piece on the board.

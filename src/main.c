@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define DEBUG
+#define CCHESS_DEBUG
 
-#ifdef DEBUG
+#ifdef CCHESS_DEBUG
 #include "board.h"
 #include "move.h"
 #include "movegen.h"
@@ -13,7 +13,7 @@
 
 int main(int argc, char *argv[])
 {
-#ifndef DEBUG
+#ifndef CCHESS_DEBUG
     fputs("+-------------------------------------+\n", stderr);
     fputs("| CChess          development version |\n", stderr);
     fputs("| Amateur UCI-compatible chess engine |\n", stderr);
@@ -32,8 +32,9 @@ int main(int argc, char *argv[])
     {
         char move_str[6];
         move_to_uci(moves[i], move_str);
-        fprintf(stderr, "%s\n", move_str);
+        fprintf(stderr, "%s ", move_str);
     }
+    fprintf(stderr, "\n");
 
     return EXIT_SUCCESS;
 #endif

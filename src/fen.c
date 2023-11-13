@@ -67,7 +67,7 @@ int _fen_get_piece_placement(const board_t *board, char *fen)
         int empty_count = 0;
         for (int file = FILE_A; file <= FILE_H; file++)
         {
-            piece_t piece = board->board[file][rank];
+            piece_t piece = board_get(board, file, rank);
             if (piece == PIECE_NONE)
                 empty_count++;
             else
@@ -221,7 +221,7 @@ int _fen_put_piece_placement(board_t *board, const char *fen)
         {
             int empty_places = c - '0';
             for (int j = 0; j < empty_places; j++)
-                board->board[file++][rank] = PIECE_NONE;
+                board_set(board, file++, rank, PIECE_NONE);
         }
 
         else if (isalpha(c))
@@ -242,7 +242,7 @@ int _fen_put_piece_placement(board_t *board, const char *fen)
                 piece = PIECE_KING;
             piece |= (isupper(c)) ? SIDE_WHITE : SIDE_BLACK;
 
-            board->board[file++][rank] = piece;
+            board_set(board, file++, rank, piece);
         }
 
         i++;
