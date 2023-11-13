@@ -29,8 +29,6 @@ int main(int argc, char *argv[])
     board_make_move(&board, move_uci("e7e5")); // e5 - Open Game
     board_make_move(&board, move_uci("g1f3")); // Nf3 - King's Knight Variation
     board_make_move(&board, move_uci("b8c6")); // Nc6 - Queen's Knight defends
-    board_make_move(&board, move_uci("f1b5")); // Bb5 - Spanish Game
-    board_make_move(&board, move_uci("a7a6")); // a6 - Morphy Defense
     board_print(&board, stderr);
 
     centipawns_t score = eval(&board);
@@ -44,6 +42,7 @@ int main(int argc, char *argv[])
     char best_move_uci[6];
     move_to_uci(best_move, best_move_uci);
     fprintf(stderr, "best_move: %s\n", best_move_uci);
+    // outputs f1b5 (Bb5)
 
     return EXIT_SUCCESS;
 #endif
