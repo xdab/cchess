@@ -39,7 +39,7 @@
 
 typedef struct board
 {
-    piece_t pieces[FILE_COUNT][RANK_COUNT];
+    piece_t pieces[RANK_COUNT][FILE_COUNT];
     side_t side_to_move;
     castling_rights_t white_castling_rights;
     castling_rights_t black_castling_rights;
@@ -54,6 +54,14 @@ typedef struct board
  * @param board The board to initialize.
  */
 void board_init(board_t *board);
+
+/**
+ * Clones the board.
+ *
+ * @param board The board to clone.
+ * @param clone The board to clone to.
+ */
+void board_clone(const board_t *board, board_t *clone);
 
 /**
  * Prints the board to the specified stream.
@@ -90,13 +98,5 @@ void board_set(board_t *board, square_t square, piece_t piece);
  * @param move The move to make.
  */
 void board_make_move(board_t *board, move_t move);
-
-/**
- * Undoes a move on the board.
- *
- * @param board The board to undo the move on.
- * @param move The move to undo.
- */
-void board_undo_move(board_t *board, move_t move);
 
 #endif

@@ -10,6 +10,7 @@
 #include "move.h"
 #include "movegen.h"
 #include "fen.h"
+#include "deepeval.h"
 #endif
 
 int main(int argc, char *argv[])
@@ -25,29 +26,19 @@ int main(int argc, char *argv[])
     board_init(&board);
 
     board_make_move(&board, move_uci("e2e4")); // e4 - King's Pawn Opening
-    board_make_move(&board, move_uci("e7e5")); // e5 - Open Game
-    board_make_move(&board, move_uci("g1f3")); // Nf3 - King's Knight Variation
-    board_make_move(&board, move_uci("b8c6")); // Nc6 - Queen's Knight defends
-    board_make_move(&board, move_uci("f1b5")); // Bb5 - Spanish Game
-    board_make_move(&board, move_uci("a7a6")); // a6 - Morphy Defense
+    // board_make_move(&board, move_uci("e7e5")); // e5 - Open Game
+    // board_make_move(&board, move_uci("g1f3")); // Nf3 - King's Knight Variation
+    // board_make_move(&board, move_uci("b8c6")); // Nc6 - Queen's Knight defends
+    // board_make_move(&board, move_uci("f1b5")); // Bb5 - Spanish Game
+    // board_make_move(&board, move_uci("a7a6")); // a6 - Morphy Defense
     board_print(&board, stderr);
 
-    move_t moves[MAX_MOVES];
-    int move_count;
-    movegen_generate(&board, moves, &move_count);
+    centipawns_t score = eval(&board);
+    fprintf(stderr, "\neval : %+f\n", score / CENTIPAWN_MULTIPLIER);
 
-    fprintf(stderr, "move_count: %d\n", move_count);
-    for (int i = 0; i < move_count; i++)
-    {
-        char move_str[6];
-        move_to_uci(moves[i], move_str);
-        fprintf(stderr, "%s ", move_str);
-    }
-    fprintf(stderr, "\n");
-
-    char fen[FEN_BUF_LENGTH];
-    fen_get(&board, fen);
-    fprintf(stderr, "%s\n", fen);
+    const int depth = 6;
+    centipawns_t deep_score = deep_eval(&board, depth);
+    fprintf(stderr, "deep_eval: %+f\n", deep_score / CENTIPAWN_MULTIPLIER);
 
     return EXIT_SUCCESS;
 #endif

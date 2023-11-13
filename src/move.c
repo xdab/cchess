@@ -2,24 +2,26 @@
 #include "board.h"
 #include <string.h>
 
-#define FROM_FILE_OFFSET 0
-#define FROM_RANK_OFFSET 3
-#define TO_FILE_OFFSET 6
-#define TO_RANK_OFFSET 9
-#define PROMOTION_OFFSET 12
+#define FROM_SQUARE_OFFSET 0
+#define TO_SQUARE_OFFSET 8
+#define PROMOTION_OFFSET 16
 
-#define FILE_MASK 0b111
-#define RANK_MASK 0b111
-#define PROMOTION_MASK 0b111
+#define SQUARE_MASK 0xFF
+#define PROMOTION_MASK 0xF
 
 #define UCI_PROMOTION_QUEEN 'q'
 #define UCI_PROMOTION_ROOK 'r'
 #define UCI_PROMOTION_BISHOP 'b'
 #define UCI_PROMOTION_KNIGHT 'n'
 
+promotion_t _move_get_promotion(move_t move)
+{
+    return (move >> PROMOTION_OFFSET) & PROMOTION_MASK;
+}
+
 move_t move_regular(square_t from, square_t to)
 {
-    return (square_file(from) << FROM_FILE_OFFSET) | (square_rank(from) << FROM_RANK_OFFSET) | (square_file(to) << TO_FILE_OFFSET) | (square_rank(to) << TO_RANK_OFFSET);
+    return (from << FROM_SQUARE_OFFSET) | (to << TO_SQUARE_OFFSET);
 }
 
 move_t move_promotion(square_t from, square_t to, promotion_t promotion)
@@ -61,20 +63,24 @@ move_t move_uci(const char *uci)
 
 void move_to_uci(move_t move, char *uci)
 {
-    int from_file = move_get_from_file(move);
-    int from_rank = move_get_from_rank(move);
-    int to_file = move_get_to_file(move);
-    int to_rank = move_get_to_rank(move);
-    int promotion_piece = move_get_promotion(move);
-
-    uci[0] = FILE_SYMBOL(from_file);
-    uci[1] = RANK_SYMBOL(from_rank);
-    uci[2] = FILE_SYMBOL(to_file);
-    uci[3] = RANK_SYMBOL(to_rank);
-
-    if (promotion_piece != PROMOTION_NONE)
+    if (move == MOVE_NULL)
     {
-        switch (promotion_piece)
+        strcpy(uci, "0000");
+        return;
+    }
+    
+    square_t from = move_get_from(move);
+    square_t to = move_get_to(move);
+    promotion_t promotion = _move_get_promotion(move);
+
+    uci[0] = FILE_SYMBOL(square_file(from));
+    uci[1] = RANK_SYMBOL(square_rank(from));
+    uci[2] = FILE_SYMBOL(square_file(to));
+    uci[3] = RANK_SYMBOL(square_rank(to));
+
+    if (promotion != PROMOTION_NONE)
+    {
+        switch (promotion)
         {
         case PROMOTION_QUEEN:
             uci[4] = UCI_PROMOTION_QUEEN;
@@ -100,27 +106,30 @@ void move_to_uci(move_t move, char *uci)
     }
 }
 
-int move_get_from_file(move_t move)
+square_t move_get_from(move_t move)
 {
-    return (move >> FROM_FILE_OFFSET) & FILE_MASK;
+    return (move >> FROM_SQUARE_OFFSET) & SQUARE_MASK;
 }
 
-int move_get_from_rank(move_t move)
+square_t move_get_to(move_t move)
 {
-    return (move >> FROM_RANK_OFFSET) & RANK_MASK;
+    return (move >> TO_SQUARE_OFFSET) & SQUARE_MASK;
 }
 
-int move_get_to_file(move_t move)
+piece_t move_get_promoted_piece(move_t move)
 {
-    return (move >> TO_FILE_OFFSET) & FILE_MASK;
-}
-
-int move_get_to_rank(move_t move)
-{
-    return (move >> TO_RANK_OFFSET) & RANK_MASK;
-}
-
-int move_get_promotion(move_t move)
-{
-    return (move >> PROMOTION_OFFSET) & PROMOTION_MASK;
+    promotion_t promotion_instruction = (move >> PROMOTION_OFFSET) & PROMOTION_MASK;
+    switch (promotion_instruction)
+    {
+    case PROMOTION_QUEEN:
+        return PIECE_QUEEN;
+    case PROMOTION_ROOK:
+        return PIECE_ROOK;
+    case PROMOTION_BISHOP:
+        return PIECE_BISHOP;
+    case PROMOTION_KNIGHT:
+        return PIECE_KNIGHT;
+    default:
+        return PIECE_NONE;
+    }
 }

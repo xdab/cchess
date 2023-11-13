@@ -19,4 +19,6 @@
 
 typedef unsigned char piece_t;
 
+char piece_symbol(piece_t piece);
+
 #endif
