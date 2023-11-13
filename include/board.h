@@ -61,6 +61,16 @@ void board_init(board_t *board);
 void board_print(board_t *board, FILE *stream);
 
 /**
+ * Gets the piece at the specified square.
+ *
+ * @param board The board to get the piece from.
+ * @param file The file of the square.
+ * @param rank The rank of the square.
+ * @return The piece at the specified square.
+ */
+piece_t board_get(board_t *board, int file, int rank);
+
+/**
  * Moves a piece on the board.
  *
  * @param board The board to move the piece on.

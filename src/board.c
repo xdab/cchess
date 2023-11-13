@@ -94,6 +94,11 @@ void board_print(board_t *board, FILE *stream)
     fputs(FILE_LEGEND, stream);
 }
 
+piece_t board_get(board_t *board, int file, int rank)
+{
+    return board->board[file][rank];
+}
+
 void board_make_move(board_t *board, move_t move)
 {
     int from_file = move_get_from_file(move);

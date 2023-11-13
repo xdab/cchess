@@ -62,6 +62,47 @@ move_t move_uci(const char *uci)
     return move_regular(from_file, from_rank, to_file, to_rank);
 }
 
+void move_to_uci(move_t move, char *uci)
+{
+    int from_file = move_get_from_file(move);
+    int from_rank = move_get_from_rank(move);
+    int to_file = move_get_to_file(move);
+    int to_rank = move_get_to_rank(move);
+    int promotion_piece = move_get_promotion(move);
+
+    uci[0] = 'a' + from_file;
+    uci[1] = '1' + from_rank;
+    uci[2] = 'a' + to_file;
+    uci[3] = '1' + to_rank;
+
+    if (promotion_piece != PROMOTION_NONE)
+    {
+        switch (promotion_piece)
+        {
+        case PROMOTION_QUEEN:
+            uci[4] = UCI_PROMOTION_QUEEN;
+            break;
+        case PROMOTION_ROOK:
+            uci[4] = UCI_PROMOTION_ROOK;
+            break;
+        case PROMOTION_BISHOP:
+            uci[4] = UCI_PROMOTION_BISHOP;
+            break;
+        case PROMOTION_KNIGHT:
+            uci[4] = UCI_PROMOTION_KNIGHT;
+            break;
+        default:
+            break;
+        }
+
+        uci[5] = '\0';
+    }
+    else
+    {
+        uci[4] = '\0';
+    }
+}
+
 int move_get_from_file(move_t move)
 {
     return (move >> FROM_FILE_OFFSET) & FILE_MASK;
