@@ -25,10 +25,10 @@ centipawns_t _eval_material(const board_t *board, side_t side)
     centipawns_t material_value = 0;
 
     for (int file = FILE_A; file <= FILE_H; file++)
-    {
         for (int rank = RANK_1; rank <= RANK_8; rank++)
         {
-            piece_t piece = board_get(board, file, rank);
+            square_t square = square_of(file, rank);
+            piece_t piece = board_get(board, square);
             if (!(piece & side))
                 continue;
             if (piece & PIECE_PAWN)
@@ -44,7 +44,6 @@ centipawns_t _eval_material(const board_t *board, side_t side)
             else if (piece & PIECE_KING)
                 material_value += VALUE_KING;
         }
-    }
 
     return material_value;
 }

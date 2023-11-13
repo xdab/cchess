@@ -8,7 +8,6 @@
 #define NEWLINE '\n'
 #define ONE '1'
 #define FILE_LEGEND "    a b c d e f g h\n"
-#define NO_EN_PASSANT -1
 
 #ifdef CCHESS_UNICODE
 #define VERTICAL "│"
@@ -58,8 +57,7 @@ void board_init(board_t *board)
     board->side_to_move = SIDE_WHITE;
     board->white_castling_rights = CASTLING_RIGHTS_KINGSIDE | CASTLING_RIGHTS_QUEENSIDE;
     board->black_castling_rights = CASTLING_RIGHTS_KINGSIDE | CASTLING_RIGHTS_QUEENSIDE;
-    board->en_passant_file = NO_EN_PASSANT;
-    board->en_passant_rank = NO_EN_PASSANT;
+    board->en_passant_square = SQUARE_NULL;
     board->halfmove_clock = 0;
     board->fullmove_number = 1;
 }
@@ -141,14 +139,14 @@ void board_print(board_t *board, FILE *stream)
     fputs(FILE_LEGEND, stream);
 }
 
-piece_t board_get(const board_t *board, int file, int rank)
+piece_t board_get(const board_t *board, square_t square)
 {
-    return board->pieces[file][rank];
+    return board->pieces[square_file(square)][square_rank(square)];
 }
 
-void board_set(board_t *board, int file, int rank, piece_t piece)
+void board_set(board_t *board, square_t square, piece_t piece)
 {
-    board->pieces[file][rank] = piece;
+    board->pieces[square_file(square)][square_rank(square)] = piece;
 }
 
 void board_make_move(board_t *board, move_t move)

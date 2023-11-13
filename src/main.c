@@ -9,6 +9,7 @@
 #include "board.h"
 #include "move.h"
 #include "movegen.h"
+#include "fen.h"
 #endif
 
 int main(int argc, char *argv[])
@@ -28,6 +29,7 @@ int main(int argc, char *argv[])
     board_make_move(&board, move_uci("g1f3")); // Nf3 - King's Knight Variation
     board_make_move(&board, move_uci("b8c6")); // Nc6 - Queen's Knight defends
     board_make_move(&board, move_uci("f1b5")); // Bb5 - Spanish Game
+    board_make_move(&board, move_uci("a7a6")); // a6 - Morphy Defense
     board_print(&board, stderr);
 
     move_t moves[MAX_MOVES];
@@ -42,6 +44,10 @@ int main(int argc, char *argv[])
         fprintf(stderr, "%s ", move_str);
     }
     fprintf(stderr, "\n");
+
+    char fen[FEN_BUF_LENGTH];
+    fen_get(&board, fen);
+    fprintf(stderr, "%s\n", fen);
 
     return EXIT_SUCCESS;
 #endif

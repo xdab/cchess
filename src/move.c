@@ -17,27 +17,24 @@
 #define UCI_PROMOTION_BISHOP 'b'
 #define UCI_PROMOTION_KNIGHT 'n'
 
-move_t move_regular(int from_file, int from_rank, int to_file, int to_rank)
+move_t move_regular(square_t from, square_t to)
 {
-    return (from_file << FROM_FILE_OFFSET) | (from_rank << FROM_RANK_OFFSET) | (to_file << TO_FILE_OFFSET) | (to_rank << TO_RANK_OFFSET);
+    return (square_file(from) << FROM_FILE_OFFSET) | (square_rank(from) << FROM_RANK_OFFSET) | (square_file(to) << TO_FILE_OFFSET) | (square_rank(to) << TO_RANK_OFFSET);
 }
 
-move_t move_promotion(int from_file, int from_rank, int to_file, int to_rank, int promotion_piece)
+move_t move_promotion(square_t from, square_t to, promotion_t promotion)
 {
-    return (from_file << FROM_FILE_OFFSET) | (from_rank << FROM_RANK_OFFSET) | (to_file << TO_FILE_OFFSET) | (to_rank << TO_RANK_OFFSET) | (promotion_piece << PROMOTION_OFFSET);
+    return move_regular(from, to) | (promotion << PROMOTION_OFFSET);
 }
 
 move_t move_uci(const char *uci)
 {
-    int from_file = FILE(uci[0]);
-    int from_rank = RANK(uci[1]);
-    int to_file = FILE(uci[2]);
-    int to_rank = RANK(uci[3]);
+    square_t from = square_of(FILE(uci[0]), RANK(uci[1]));
+    square_t to = square_of(FILE(uci[2]), RANK(uci[3]));
 
-    if (strlen(uci) == 5)
+    if (uci[4] != '\0')
     {
-        int promotion_piece = PROMOTION_NONE;
-
+        promotion_t promotion_piece = PROMOTION_NONE;
         switch (uci[4])
         {
         case UCI_PROMOTION_QUEEN:
@@ -56,10 +53,10 @@ move_t move_uci(const char *uci)
             break;
         }
 
-        return move_promotion(from_file, from_rank, to_file, to_rank, promotion_piece);
+        return move_promotion(from, to, promotion_piece);
     }
 
-    return move_regular(from_file, from_rank, to_file, to_rank);
+    return move_regular(from, to);
 }
 
 void move_to_uci(move_t move, char *uci)
@@ -70,10 +67,10 @@ void move_to_uci(move_t move, char *uci)
     int to_rank = move_get_to_rank(move);
     int promotion_piece = move_get_promotion(move);
 
-    uci[0] = 'a' + from_file;
-    uci[1] = '1' + from_rank;
-    uci[2] = 'a' + to_file;
-    uci[3] = '1' + to_rank;
+    uci[0] = FILE_SYMBOL(from_file);
+    uci[1] = RANK_SYMBOL(from_rank);
+    uci[2] = FILE_SYMBOL(to_file);
+    uci[3] = RANK_SYMBOL(to_rank);
 
     if (promotion_piece != PROMOTION_NONE)
     {

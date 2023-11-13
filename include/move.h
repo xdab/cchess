@@ -1,16 +1,20 @@
 #ifndef MOVE_H
 #define MOVE_H
 
-#define PROMOTION_NONE 0
-#define PROMOTION_QUEEN 1
-#define PROMOTION_ROOK 2
-#define PROMOTION_BISHOP 3
-#define PROMOTION_KNIGHT 4
+#include "square.h"
+
+typedef enum promotion {
+	PROMOTION_NONE = 0,
+	PROMOTION_QUEEN = 1,
+	PROMOTION_ROOK = 2,
+	PROMOTION_BISHOP = 4,
+	PROMOTION_KNIGHT = 8,
+} promotion_t;
 
 typedef unsigned short move_t;
 
-move_t move_regular(int from_file, int from_rank, int to_file, int to_rank);
-move_t move_promotion(int from_file, int from_rank, int to_file, int to_rank, int promotion_piece);
+move_t move_regular(square_t from, square_t to);
+move_t move_promotion(square_t from, square_t to, promotion_t promotion);
 
 move_t move_uci(const char *uci);
 void move_to_uci(move_t move, char *uci);
