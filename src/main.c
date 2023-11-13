@@ -23,6 +23,12 @@ int main(int argc, char *argv[])
     board_t board;
     board_init(&board);
 
+    board_make_move(&board, move_uci("e2e4"));
+    board_make_move(&board, move_uci("e7e5"));
+    board_make_move(&board, move_uci("g1f3"));
+    board_make_move(&board, move_uci("b8c6"));
+    board_print(&board, stderr);
+
     move_t moves[MAX_MOVES];
     int move_count;
     movegen_generate(&board, moves, &move_count);

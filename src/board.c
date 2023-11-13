@@ -116,4 +116,6 @@ void board_make_move(board_t *board, move_t move)
     
     board->pieces[from_file][from_rank] = PIECE_NONE;
     board->pieces[to_file][to_rank] = piece_to_move;
+
+    board->side_to_move = (piece_to_move & SIDE_WHITE) ? SIDE_BLACK : SIDE_WHITE;
 }
