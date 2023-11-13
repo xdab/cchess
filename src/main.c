@@ -26,19 +26,24 @@ int main(int argc, char *argv[])
     board_init(&board);
 
     board_make_move(&board, move_uci("e2e4")); // e4 - King's Pawn Opening
-    // board_make_move(&board, move_uci("e7e5")); // e5 - Open Game
-    // board_make_move(&board, move_uci("g1f3")); // Nf3 - King's Knight Variation
-    // board_make_move(&board, move_uci("b8c6")); // Nc6 - Queen's Knight defends
-    // board_make_move(&board, move_uci("f1b5")); // Bb5 - Spanish Game
-    // board_make_move(&board, move_uci("a7a6")); // a6 - Morphy Defense
+    board_make_move(&board, move_uci("e7e5")); // e5 - Open Game
+    board_make_move(&board, move_uci("g1f3")); // Nf3 - King's Knight Variation
+    board_make_move(&board, move_uci("b8c6")); // Nc6 - Queen's Knight defends
+    board_make_move(&board, move_uci("f1b5")); // Bb5 - Spanish Game
+    board_make_move(&board, move_uci("a7a6")); // a6 - Morphy Defense
     board_print(&board, stderr);
 
     centipawns_t score = eval(&board);
     fprintf(stderr, "\neval : %+f\n", score / CENTIPAWN_MULTIPLIER);
 
-    const int depth = 6;
-    centipawns_t deep_score = deep_eval(&board, depth);
+    const int depth = 4;
+    move_t best_move;
+    centipawns_t deep_score = deep_eval(&board, depth, &best_move);
     fprintf(stderr, "deep_eval: %+f\n", deep_score / CENTIPAWN_MULTIPLIER);
+
+    char best_move_uci[6];
+    move_to_uci(best_move, best_move_uci);
+    fprintf(stderr, "best_move: %s\n", best_move_uci);
 
     return EXIT_SUCCESS;
 #endif

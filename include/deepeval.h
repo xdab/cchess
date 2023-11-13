@@ -5,6 +5,6 @@
 #include "move.h"
 #include "eval.h"
 
-centipawns_t deep_eval(const board_t *board, int depth);
+centipawns_t deep_eval(board_t *board, int depth, move_t *best_move);
 
 #endif

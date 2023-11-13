@@ -60,6 +60,7 @@ void board_init(board_t *board)
     board->en_passant_square = SQUARE_NULL;
     board->halfmove_clock = 0;
     board->fullmove_number = 1;
+    board->history_size = 0;
 }
 
 void board_clone(const board_t *board, board_t *clone)
@@ -74,6 +75,7 @@ void board_clone(const board_t *board, board_t *clone)
     clone->en_passant_square = board->en_passant_square;
     clone->halfmove_clock = board->halfmove_clock;
     clone->fullmove_number = board->fullmove_number;
+    clone->history_size = board->history_size;
 }
 
 void board_print(board_t *board, FILE *stream)
@@ -166,11 +168,61 @@ void board_set(board_t *board, square_t square, piece_t piece)
 void board_make_move(board_t *board, move_t move)
 {
     square_t from = move_get_from(move);
-    piece_t piece_to_move = board_get(board, from);
+    piece_t moved_piece = board_get(board, from);
+
+    square_t to = move_get_to(move);
+    piece_t captured_piece = board_get(board, to);
+
+    // Store event in history
+    if (board->history_size == BOARD_HISTORY_SIZE)
+    {
+        for (int i = 0; i < BOARD_HISTORY_SIZE - 1; i++)
+            board->history[i] = board->history[i + 1];
+        board->history_size--;
+    }
+    board->history[board->history_size].move = move;
+    board->history[board->history_size].captured_piece = captured_piece;
+    board->history[board->history_size].white_castling_rights = board->white_castling_rights;
+    board->history[board->history_size].black_castling_rights = board->black_castling_rights;
+    board->history[board->history_size].en_passant_square = board->en_passant_square;
+    board->history[board->history_size].halfmove_clock = board->halfmove_clock;
+    board->history_size++;
+
+    piece_t promoted_piece = move_get_promoted_piece(move);
+    if (promoted_piece != PIECE_NONE)
+        moved_piece = promoted_piece | (moved_piece & SIDE_MASK);
+
     board_set(board, from, PIECE_NONE);
-    piece_t promotion_to = move_get_promoted_piece(move);
-    if (promotion_to != PIECE_NONE)
-        piece_to_move = promotion_to | (piece_to_move & SIDE_MASK);
-    board_set(board, move_get_to(move), piece_to_move);
-    board->side_to_move = (piece_to_move & SIDE_WHITE) ? SIDE_BLACK : SIDE_WHITE;
+    board_set(board, to, moved_piece);
+    board->side_to_move = (moved_piece & SIDE_WHITE) ? SIDE_BLACK : SIDE_WHITE;
+    board->halfmove_clock = ((captured_piece != PIECE_NONE) || (moved_piece & PIECE_PAWN)) ? 0 : (board->halfmove_clock + 1);
+    board->fullmove_number += (board->side_to_move == SIDE_BLACK);
+}
+
+void board_unmake_move(board_t *board)
+{
+    if (board->history_size == 0)
+        return;
+
+    board->history_size--;
+    move_t move = board->history[board->history_size].move;
+
+    square_t from = move_get_from(move);
+    square_t to = move_get_to(move);
+
+    piece_t moved_piece = board_get(board, to);
+    piece_t captured_piece = board->history[board->history_size].captured_piece;
+
+    piece_t promoted_piece = move_get_promoted_piece(move);
+    if (promoted_piece != PIECE_NONE)
+        moved_piece = PIECE_PAWN | (moved_piece & SIDE_MASK);
+
+    board_set(board, from, moved_piece);
+    board_set(board, to, captured_piece);
+    board->side_to_move = (moved_piece & SIDE_WHITE) ? SIDE_WHITE : SIDE_BLACK;
+    board->white_castling_rights = board->history[board->history_size].white_castling_rights;
+    board->black_castling_rights = board->history[board->history_size].black_castling_rights;
+    board->en_passant_square = board->history[board->history_size].en_passant_square;
+    board->halfmove_clock = board->history[board->history_size].halfmove_clock;
+    board->fullmove_number -= (board->side_to_move == SIDE_BLACK);
 }

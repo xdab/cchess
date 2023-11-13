@@ -37,6 +37,18 @@
 #define FILE_SYMBOL(f) (f + 'a')
 #define RANK_SYMBOL(r) (r + '1')
 
+#define BOARD_HISTORY_SIZE 128
+
+typedef struct board_event
+{
+    move_t move;
+    piece_t captured_piece;
+    castling_rights_t white_castling_rights;
+    castling_rights_t black_castling_rights;
+    square_t en_passant_square;
+    int halfmove_clock;
+} board_event_t;
+
 typedef struct board
 {
     piece_t pieces[RANK_COUNT][FILE_COUNT];
@@ -46,6 +58,10 @@ typedef struct board
     square_t en_passant_square;
     int halfmove_clock;
     int fullmove_number;
+
+    // Board history
+    board_event_t history[BOARD_HISTORY_SIZE];
+    int history_size;
 } board_t;
 
 /**
@@ -98,5 +114,12 @@ void board_set(board_t *board, square_t square, piece_t piece);
  * @param move The move to make.
  */
 void board_make_move(board_t *board, move_t move);
+
+/**
+ * Undoes the last move made on the board.
+ *
+ * @param board The board to undo the last move on.
+ */
+void board_unmake_move(board_t *board);
 
 #endif
