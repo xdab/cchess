@@ -7,26 +7,22 @@
 #define PROMOTION_OFFSET 16
 
 #define SQUARE_MASK 0xFF
-#define PROMOTION_MASK 0xF
+#define PROMOTION_MASK 0x001F0000
 
 #define UCI_PROMOTION_QUEEN 'q'
 #define UCI_PROMOTION_ROOK 'r'
 #define UCI_PROMOTION_BISHOP 'b'
 #define UCI_PROMOTION_KNIGHT 'n'
 
-promotion_t _move_get_promotion(move_t move)
-{
-    return (move >> PROMOTION_OFFSET) & PROMOTION_MASK;
-}
-
 move_t move_regular(square_t from, square_t to)
 {
-    return (from << FROM_SQUARE_OFFSET) | (to << TO_SQUARE_OFFSET);
+    return ((move_t)from << FROM_SQUARE_OFFSET) | ((move_t)to << TO_SQUARE_OFFSET);
 }
 
-move_t move_promotion(square_t from, square_t to, promotion_t promotion)
+move_t move_promotion(square_t from, square_t to, piece_t promote_to)
 {
-    return move_regular(from, to) | (promotion << PROMOTION_OFFSET);
+    promote_to &= PIECE_MASK;
+    return move_regular(from, to) | ((move_t)promote_to << PROMOTION_OFFSET);
 }
 
 move_t move_uci(const char *uci)
@@ -34,31 +30,26 @@ move_t move_uci(const char *uci)
     square_t from = square_of(FILE(uci[0]), RANK(uci[1]));
     square_t to = square_of(FILE(uci[2]), RANK(uci[3]));
 
-    if (uci[4] != '\0')
+    piece_t promote_to = PIECE_NONE;
+    switch (uci[4])
     {
-        promotion_t promotion_piece = PROMOTION_NONE;
-        switch (uci[4])
-        {
-        case UCI_PROMOTION_QUEEN:
-            promotion_piece = PROMOTION_QUEEN;
-            break;
-        case UCI_PROMOTION_ROOK:
-            promotion_piece = PROMOTION_ROOK;
-            break;
-        case UCI_PROMOTION_BISHOP:
-            promotion_piece = PROMOTION_BISHOP;
-            break;
-        case UCI_PROMOTION_KNIGHT:
-            promotion_piece = PROMOTION_KNIGHT;
-            break;
-        default:
-            break;
-        }
-
-        return move_promotion(from, to, promotion_piece);
+    case UCI_PROMOTION_QUEEN:
+        promote_to = PIECE_QUEEN;
+        break;
+    case UCI_PROMOTION_ROOK:
+        promote_to = PIECE_ROOK;
+        break;
+    case UCI_PROMOTION_BISHOP:
+        promote_to = PIECE_BISHOP;
+        break;
+    case UCI_PROMOTION_KNIGHT:
+        promote_to = PIECE_KNIGHT;
+        break;
+    default:
+        break;
     }
 
-    return move_regular(from, to);
+    return move_promotion(from, to, promote_to);
 }
 
 void move_to_uci(move_t move, char *uci)
@@ -68,30 +59,30 @@ void move_to_uci(move_t move, char *uci)
         strcpy(uci, "0000");
         return;
     }
-    
+
     square_t from = move_get_from(move);
     square_t to = move_get_to(move);
-    promotion_t promotion = _move_get_promotion(move);
+    piece_t promote_to = move_get_promoted_piece(move);
 
     uci[0] = FILE_SYMBOL(square_file(from));
     uci[1] = RANK_SYMBOL(square_rank(from));
     uci[2] = FILE_SYMBOL(square_file(to));
     uci[3] = RANK_SYMBOL(square_rank(to));
 
-    if (promotion != PROMOTION_NONE)
+    if (promote_to != PIECE_NONE)
     {
-        switch (promotion)
+        switch (promote_to)
         {
-        case PROMOTION_QUEEN:
+        case PIECE_QUEEN:
             uci[4] = UCI_PROMOTION_QUEEN;
             break;
-        case PROMOTION_ROOK:
+        case PIECE_ROOK:
             uci[4] = UCI_PROMOTION_ROOK;
             break;
-        case PROMOTION_BISHOP:
+        case PIECE_BISHOP:
             uci[4] = UCI_PROMOTION_BISHOP;
             break;
-        case PROMOTION_KNIGHT:
+        case PIECE_KNIGHT:
             uci[4] = UCI_PROMOTION_KNIGHT;
             break;
         default:
@@ -118,18 +109,5 @@ square_t move_get_to(move_t move)
 
 piece_t move_get_promoted_piece(move_t move)
 {
-    promotion_t promotion_instruction = (move >> PROMOTION_OFFSET) & PROMOTION_MASK;
-    switch (promotion_instruction)
-    {
-    case PROMOTION_QUEEN:
-        return PIECE_QUEEN;
-    case PROMOTION_ROOK:
-        return PIECE_ROOK;
-    case PROMOTION_BISHOP:
-        return PIECE_BISHOP;
-    case PROMOTION_KNIGHT:
-        return PIECE_KNIGHT;
-    default:
-        return PIECE_NONE;
-    }
+    return (piece_t)((move & PROMOTION_MASK) >> PROMOTION_OFFSET);
 }

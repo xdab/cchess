@@ -201,19 +201,19 @@ void _movegen_generate_white_pawn_pushes(const board_t *board, move_t *out_moves
         if (board_get(board, in_front) == PIECE_NONE)
         {
             // Push 1 and promote to queen
-            out_moves[*out_move_count] = move_promotion(square, in_front, PROMOTION_QUEEN);
+            out_moves[*out_move_count] = move_promotion(square, in_front, PIECE_QUEEN);
             (*out_move_count)++;
 
             // ... and promote to rook
-            out_moves[*out_move_count] = move_promotion(square, in_front, PROMOTION_ROOK);
+            out_moves[*out_move_count] = move_promotion(square, in_front, PIECE_ROOK);
             (*out_move_count)++;
 
             // ... and promote to bishop
-            out_moves[*out_move_count] = move_promotion(square, in_front, PROMOTION_BISHOP);
+            out_moves[*out_move_count] = move_promotion(square, in_front, PIECE_BISHOP);
             (*out_move_count)++;
 
             // ... and promote to knight
-            out_moves[*out_move_count] = move_promotion(square, in_front, PROMOTION_KNIGHT);
+            out_moves[*out_move_count] = move_promotion(square, in_front, PIECE_KNIGHT);
             (*out_move_count)++;
         }
     }
@@ -276,19 +276,19 @@ void _movegen_generate_black_pawn_pushes(const board_t *board, move_t *out_moves
         if (board_get(board, in_front) == PIECE_NONE)
         {
             // Push 1 and promote to queen
-            out_moves[*out_move_count] = move_promotion(square, in_front, PROMOTION_QUEEN);
+            out_moves[*out_move_count] = move_promotion(square, in_front, PIECE_QUEEN);
             (*out_move_count)++;
 
             // ... and promote to rook
-            out_moves[*out_move_count] = move_promotion(square, in_front, PROMOTION_ROOK);
+            out_moves[*out_move_count] = move_promotion(square, in_front, PIECE_ROOK);
             (*out_move_count)++;
 
             // ... and promote to bishop
-            out_moves[*out_move_count] = move_promotion(square, in_front, PROMOTION_BISHOP);
+            out_moves[*out_move_count] = move_promotion(square, in_front, PIECE_BISHOP);
             (*out_move_count)++;
 
             // ... and promote to knight
-            out_moves[*out_move_count] = move_promotion(square, in_front, PROMOTION_KNIGHT);
+            out_moves[*out_move_count] = move_promotion(square, in_front, PIECE_KNIGHT);
             (*out_move_count)++;
         }
     }
