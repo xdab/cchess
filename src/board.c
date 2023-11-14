@@ -1,6 +1,7 @@
 #include "board.h"
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 
 #define CCHESS_UNICODE
 
@@ -26,6 +27,10 @@
 
 void board_init(board_t *board)
 {
+    for (int file = FILE_A; file <= FILE_H; file++)
+        memset(board->pieces[file], PIECE_NONE, RANK_COUNT);
+    board->hash = 0;
+    
     board_set(board, square_of(FILE_A, RANK_1), PIECE_ROOK | SIDE_WHITE);
     board_set(board, square_of(FILE_B, RANK_1), PIECE_KNIGHT | SIDE_WHITE);
     board_set(board, square_of(FILE_C, RANK_1), PIECE_BISHOP | SIDE_WHITE);
@@ -76,6 +81,7 @@ void board_clone(const board_t *board, board_t *clone)
     clone->halfmove_clock = board->halfmove_clock;
     clone->fullmove_number = board->fullmove_number;
     clone->history_size = board->history_size;
+    clone->hash = board->hash;
 }
 
 void board_print(board_t *board, FILE *stream)
@@ -162,6 +168,8 @@ piece_t board_get(const board_t *board, square_t square)
 
 void board_set(board_t *board, square_t square, piece_t piece)
 {
+    piece_t old_piece = board_get(board, square);
+    board->hash = zobrist_update_piece(board, square, old_piece, piece);
     board->pieces[square_file(square)][square_rank(square)] = piece;
 }
 

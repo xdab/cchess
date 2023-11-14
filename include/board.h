@@ -1,41 +1,17 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include "ranks.h"
+#include "files.h"
 #include "piece.h"
 #include "side.h"
 #include "castling.h"
 #include "move.h"
 #include "square.h"
+#include "zobrist.h"
 
 #include <stdio.h>
 #include <stdbool.h>
-
-#define FILE_A 0
-#define FILE_B 1
-#define FILE_C 2
-#define FILE_D 3
-#define FILE_E 4
-#define FILE_F 5
-#define FILE_G 6
-#define FILE_H 7
-
-#define RANK_1 0
-#define RANK_2 1
-#define RANK_3 2
-#define RANK_4 3
-#define RANK_5 4
-#define RANK_6 5
-#define RANK_7 6
-#define RANK_8 7
-
-#define FILE_COUNT 8
-#define RANK_COUNT 8
-
-#define FILE(c) (c - 'a')
-#define RANK(c) (c - '1')
-
-#define FILE_SYMBOL(f) (f + 'a')
-#define RANK_SYMBOL(r) (r + '1')
 
 #define BOARD_HISTORY_SIZE 128
 
@@ -58,6 +34,7 @@ typedef struct board
     square_t en_passant_square;
     int halfmove_clock;
     int fullmove_number;
+    zobrist_t hash;
 
     // Board history
     board_event_t history[BOARD_HISTORY_SIZE];

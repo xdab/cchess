@@ -11,6 +11,8 @@
 #include "movegen.h"
 #include "fen.h"
 #include "deepeval.h"
+#include "random.h"
+#include "zobrist.h"
 #endif
 
 int main(int argc, char *argv[])
@@ -23,12 +25,30 @@ int main(int argc, char *argv[])
     return uci_loop();
 #else
     board_t board;
-    board_init(&board);
+    zobrist_init();
 
-    board_make_move(&board, move_uci("e2e4")); // e4 - King's Pawn Opening
-    board_make_move(&board, move_uci("e7e5")); // e5 - Open Game
-    board_make_move(&board, move_uci("g1f3")); // Nf3 - King's Knight Variation
-    board_make_move(&board, move_uci("b8c6")); // Nc6 - Queen's Knight defends
+    board_init(&board);
+    board_make_move(&board, move_uci("e2e4"));  
+    fprintf(stderr, "hash after e2e4: 0x%016lX\n", board.hash);
+    board_make_move(&board, move_uci("e7e5")); 
+    fprintf(stderr, "hash after e7e5: 0x%016lX\n", board.hash);
+    board_make_move(&board, move_uci("d2d4"));
+    fprintf(stderr, "hash after d2d4: 0x%016lX\n", board.hash);
+    board_make_move(&board, move_uci("d7d5"));
+    fprintf(stderr, "hash after d7d5: 0x%016lX\n", board.hash);
+
+    board_print(&board, stderr);
+
+    board_init(&board);
+    board_make_move(&board, move_uci("d7d5"));
+    fprintf(stderr, "hash after d2d4: 0x%016lX\n", board.hash);
+    board_make_move(&board, move_uci("e2e4")); 
+    fprintf(stderr, "hash after d7d5: 0x%016lX\n", board.hash);
+    board_make_move(&board, move_uci("e7e5"));
+    fprintf(stderr, "hash after e2e4: 0x%016lX\n", board.hash);
+    board_make_move(&board, move_uci("d2d4"));
+    fprintf(stderr, "hash after e7e5: 0x%016lX\n", board.hash);
+
     board_print(&board, stderr);
 
     centipawns_t score = eval(&board);
@@ -42,7 +62,6 @@ int main(int argc, char *argv[])
     char best_move_uci[6];
     move_to_uci(best_move, best_move_uci);
     fprintf(stderr, "best_move: %s\n", best_move_uci);
-    // outputs f1b5 (Bb5)
 
     return EXIT_SUCCESS;
 #endif
