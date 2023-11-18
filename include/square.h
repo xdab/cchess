@@ -89,6 +89,9 @@ typedef int8_t square_t;
 #define SQUARE_FILE(sq) ((sq) % 8)
 #define SQUARE_RANK(sq) (7 - ((sq) / 8))
 
+#define SQUARE_DARK(sq) (((sq) % 2) == (((sq) / 8) % 2))
+#define SQUARE_LIGHT(sq) !SQUARE_DARK(sq)
+
 static inline square_t SQUARE_OF(file_t file, rank_t rank)
 {
 	if (file < FILE_A || file > FILE_H)

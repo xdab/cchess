@@ -79,17 +79,17 @@ void movegen_generate(const board_t *board, move_t *out_moves, int *out_move_cou
             continue;
         if (!(piece & side))
             continue;
-        if (piece & PIECE_PAWN)
+        if (piece & PAWN)
             _movegen_generate_pawn_moves(board, out_moves, out_move_count, square);
-        else if (piece & PIECE_KNIGHT)
+        else if (piece & KNIGHT)
             _movegen_generate_knight_moves(board, out_moves, out_move_count, square);
-        else if (piece & PIECE_BISHOP)
+        else if (piece & BISHOP)
             _movegen_generate_bishop_moves(board, out_moves, out_move_count, square);
-        else if (piece & PIECE_ROOK)
+        else if (piece & ROOK)
             _movegen_generate_rook_moves(board, out_moves, out_move_count, square);
-        else if (piece & PIECE_QUEEN)
+        else if (piece & QUEEN)
             _movegen_generate_queen_moves(board, out_moves, out_move_count, square);
-        else if (piece & PIECE_KING)
+        else if (piece & KING)
             _movegen_generate_king_moves(board, out_moves, out_move_count, square);
     }
 }
@@ -97,12 +97,12 @@ void movegen_generate(const board_t *board, move_t *out_moves, int *out_move_cou
 void _movegen_generate_pawn_moves(const board_t *board, move_t *out_moves, int *out_move_count, square_t square)
 {
     piece_t pawn = board_get(board, square);
-    if (pawn & SIDE_WHITE)
+    if (pawn & WHITE)
     {
         _movegen_generate_white_pawn_pushes(board, out_moves, out_move_count, square);
         _movegen_generate_white_pawn_captures(board, out_moves, out_move_count, square);
     }
-    else if (pawn & SIDE_BLACK)
+    else if (pawn & BLACK)
     {
         _movegen_generate_black_pawn_pushes(board, out_moves, out_move_count, square);
         _movegen_generate_black_pawn_captures(board, out_moves, out_move_count, square);
@@ -217,19 +217,19 @@ void _movegen_generate_white_pawn_pushes(const board_t *board, move_t *out_moves
         if (board_get(board, in_front) == PIECE_NONE)
         {
             // Push 1 and promote to queen
-            out_moves[*out_move_count] = move_promotion(square, in_front, PIECE_QUEEN);
+            out_moves[*out_move_count] = move_promotion(square, in_front, QUEEN);
             (*out_move_count)++;
 
             // ... and promote to rook
-            out_moves[*out_move_count] = move_promotion(square, in_front, PIECE_ROOK);
+            out_moves[*out_move_count] = move_promotion(square, in_front, ROOK);
             (*out_move_count)++;
 
             // ... and promote to bishop
-            out_moves[*out_move_count] = move_promotion(square, in_front, PIECE_BISHOP);
+            out_moves[*out_move_count] = move_promotion(square, in_front, BISHOP);
             (*out_move_count)++;
 
             // ... and promote to knight
-            out_moves[*out_move_count] = move_promotion(square, in_front, PIECE_KNIGHT);
+            out_moves[*out_move_count] = move_promotion(square, in_front, KNIGHT);
             (*out_move_count)++;
         }
     }
@@ -292,19 +292,19 @@ void _movegen_generate_black_pawn_pushes(const board_t *board, move_t *out_moves
         if (board_get(board, in_front) == PIECE_NONE)
         {
             // Push 1 and promote to queen
-            out_moves[*out_move_count] = move_promotion(square, in_front, PIECE_QUEEN);
+            out_moves[*out_move_count] = move_promotion(square, in_front, QUEEN);
             (*out_move_count)++;
 
             // ... and promote to rook
-            out_moves[*out_move_count] = move_promotion(square, in_front, PIECE_ROOK);
+            out_moves[*out_move_count] = move_promotion(square, in_front, ROOK);
             (*out_move_count)++;
 
             // ... and promote to bishop
-            out_moves[*out_move_count] = move_promotion(square, in_front, PIECE_BISHOP);
+            out_moves[*out_move_count] = move_promotion(square, in_front, BISHOP);
             (*out_move_count)++;
 
             // ... and promote to knight
-            out_moves[*out_move_count] = move_promotion(square, in_front, PIECE_KNIGHT);
+            out_moves[*out_move_count] = move_promotion(square, in_front, KNIGHT);
             (*out_move_count)++;
         }
     }
@@ -347,14 +347,14 @@ void _movegen_generate_king_regular(const board_t *board, move_t *out_moves, int
 
 void _movegen_generate_king_castling(const board_t *board, move_t *out_moves, int *out_move_count, square_t square)
 {
-    if (board->side_to_move == SIDE_WHITE)
+    if (board->side_to_move == WHITE)
     {
         if (board->white_castling_rights & CASTLING_RIGHTS_KINGSIDE)
         {
             bool is_intermediate_square_empty = board_get(board, WHITE_KINGSIDE_CASTLING_INTERMEDIATE_SQUARE) == PIECE_NONE;
             bool is_target_square_empty = board_get(board, WHITE_KINGSIDE_CASTLING_SQUARE) == PIECE_NONE;
             piece_t initial_rook_square_piece = board_get(board, WHITE_KINGSIDE_CASTLING_INITIAL_ROOK_SQUARE);
-            bool is_initial_rook_square_white_rook = initial_rook_square_piece == (PIECE_ROOK | SIDE_WHITE);
+            bool is_initial_rook_square_white_rook = initial_rook_square_piece == (ROOK | WHITE);
 
             if (is_intermediate_square_empty && is_target_square_empty & is_initial_rook_square_white_rook)
             {
@@ -369,7 +369,7 @@ void _movegen_generate_king_castling(const board_t *board, move_t *out_moves, in
             bool is_intermediate_square_2_empty = board_get(board, WHITE_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE_2) == PIECE_NONE;
             bool is_target_square_empty = board_get(board, WHITE_QUEENSIDE_CASTLING_SQUARE) == PIECE_NONE;
             piece_t initial_rook_square_piece = board_get(board, WHITE_QUEENSIDE_CASTLING_INITIAL_ROOK_SQUARE);
-            bool is_initial_rook_square_white_rook = initial_rook_square_piece == (PIECE_ROOK | SIDE_WHITE);
+            bool is_initial_rook_square_white_rook = initial_rook_square_piece == (ROOK | WHITE);
 
             if (is_intermediate_square_empty && is_intermediate_square_2_empty && is_target_square_empty && is_initial_rook_square_white_rook)
             {
@@ -379,14 +379,14 @@ void _movegen_generate_king_castling(const board_t *board, move_t *out_moves, in
         }
     }
 
-    else if (board->side_to_move == SIDE_BLACK)
+    else if (board->side_to_move == BLACK)
     {
         if (board->black_castling_rights & CASTLING_RIGHTS_KINGSIDE)
         {
             bool is_intermediate_square_empty = board_get(board, BLACK_KINGSIDE_CASTLING_INTERMEDIATE_SQUARE) == PIECE_NONE;
             bool is_target_square_empty = board_get(board, BLACK_KINGSIDE_CASTLING_SQUARE) == PIECE_NONE;
             piece_t initial_rook_square_piece = board_get(board, BLACK_KINGSIDE_CASTLING_INITIAL_ROOK_SQUARE);
-            bool is_initial_rook_square_black_rook = initial_rook_square_piece == (PIECE_ROOK | SIDE_BLACK);
+            bool is_initial_rook_square_black_rook = initial_rook_square_piece == (ROOK | BLACK);
 
             if (is_intermediate_square_empty && is_target_square_empty && is_initial_rook_square_black_rook)
             {
@@ -401,7 +401,7 @@ void _movegen_generate_king_castling(const board_t *board, move_t *out_moves, in
             bool is_intermediate_square_2_empty = board_get(board, BLACK_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE_2) == PIECE_NONE;
             bool is_target_square_empty = board_get(board, BLACK_QUEENSIDE_CASTLING_SQUARE) == PIECE_NONE;
             piece_t initial_rook_square_piece = board_get(board, BLACK_QUEENSIDE_CASTLING_INITIAL_ROOK_SQUARE);
-            bool is_initial_rook_square_black_rook = initial_rook_square_piece == (PIECE_ROOK | SIDE_BLACK);
+            bool is_initial_rook_square_black_rook = initial_rook_square_piece == (ROOK | BLACK);
 
             if (is_intermediate_square_empty && is_intermediate_square_2_empty && is_target_square_empty && is_initial_rook_square_black_rook)
             {

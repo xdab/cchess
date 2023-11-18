@@ -80,20 +80,20 @@ int _fen_get_piece_placement(const board_t *board, char *fen)
                 }
 
                 char piece_char = SYMBOL_NONE;
-                if (piece & PIECE_PAWN)
+                if (piece & PAWN)
                     piece_char = SYMBOL_PAWN;
-                else if (piece & PIECE_KNIGHT)
+                else if (piece & KNIGHT)
                     piece_char = SYMBOL_KNIGHT;
-                else if (piece & PIECE_BISHOP)
+                else if (piece & BISHOP)
                     piece_char = SYMBOL_BISHOP;
-                else if (piece & PIECE_ROOK)
+                else if (piece & ROOK)
                     piece_char = SYMBOL_ROOK;
-                else if (piece & PIECE_QUEEN)
+                else if (piece & QUEEN)
                     piece_char = SYMBOL_QUEEN;
-                else if (piece & PIECE_KING)
+                else if (piece & KING)
                     piece_char = SYMBOL_KING;
 
-                if (piece & SIDE_BLACK)
+                if (piece & BLACK)
                     piece_char = tolower(piece_char);
 
                 fen[i++] = piece_char;
@@ -112,7 +112,7 @@ int _fen_get_piece_placement(const board_t *board, char *fen)
 
 int _fen_get_side_to_move(const board_t *board, char *fen)
 {
-    if (board->side_to_move == SIDE_WHITE)
+    if (board->side_to_move == WHITE)
         fen[0] = 'w';
     else
         fen[0] = 'b';
@@ -230,18 +230,18 @@ int _fen_put_piece_placement(board_t *board, const char *fen)
             piece_t piece = PIECE_NONE;
             char uc = toupper(c);
             if (uc == SYMBOL_PAWN)
-                piece = PIECE_PAWN;
+                piece = PAWN;
             else if (uc == SYMBOL_KNIGHT)
-                piece = PIECE_KNIGHT;
+                piece = KNIGHT;
             else if (uc == SYMBOL_BISHOP)
-                piece = PIECE_BISHOP;
+                piece = BISHOP;
             else if (uc == SYMBOL_ROOK)
-                piece = PIECE_ROOK;
+                piece = ROOK;
             else if (uc == SYMBOL_QUEEN)
-                piece = PIECE_QUEEN;
+                piece = QUEEN;
             else if (uc == SYMBOL_KING)
-                piece = PIECE_KING;
-            piece |= (isupper(c)) ? SIDE_WHITE : SIDE_BLACK;
+                piece = KING;
+            piece |= (isupper(c)) ? WHITE : BLACK;
 
             board_set(board, SQUARE_OF(file++, rank), piece);
         }
@@ -255,9 +255,9 @@ int _fen_put_piece_placement(board_t *board, const char *fen)
 int _fen_put_side_to_move(board_t *board, const char *fen)
 {
     if (fen[0] == 'w')
-        board->side_to_move = SIDE_WHITE;
+        board->side_to_move = WHITE;
     else
-        board->side_to_move = SIDE_BLACK;
+        board->side_to_move = BLACK;
 
     return 1;
 }

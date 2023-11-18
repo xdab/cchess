@@ -34,16 +34,16 @@ move_t move_uci(const char *uci)
     switch (uci[4])
     {
     case UCI_PROMOTION_QUEEN:
-        promote_to = PIECE_QUEEN;
+        promote_to = QUEEN;
         break;
     case UCI_PROMOTION_ROOK:
-        promote_to = PIECE_ROOK;
+        promote_to = ROOK;
         break;
     case UCI_PROMOTION_BISHOP:
-        promote_to = PIECE_BISHOP;
+        promote_to = BISHOP;
         break;
     case UCI_PROMOTION_KNIGHT:
-        promote_to = PIECE_KNIGHT;
+        promote_to = KNIGHT;
         break;
     default:
         break;
@@ -73,16 +73,16 @@ void move_to_uci(move_t move, char *uci)
     {
         switch (promote_to)
         {
-        case PIECE_QUEEN:
+        case QUEEN:
             uci[4] = UCI_PROMOTION_QUEEN;
             break;
-        case PIECE_ROOK:
+        case ROOK:
             uci[4] = UCI_PROMOTION_ROOK;
             break;
-        case PIECE_BISHOP:
+        case BISHOP:
             uci[4] = UCI_PROMOTION_BISHOP;
             break;
-        case PIECE_KNIGHT:
+        case KNIGHT:
             uci[4] = UCI_PROMOTION_KNIGHT;
             break;
         default:

@@ -4,6 +4,7 @@
 #include "rank.h"
 #include "file.h"
 #include "piece.h"
+#include "piecepos.h"
 #include "side.h"
 #include "castling.h"
 #include "move.h"
@@ -14,6 +15,7 @@
 #include <stdbool.h>
 
 #define BOARD_HISTORY_SIZE 128
+#define BOARD_PIECE_COUNT L_PIECE_COUNT
 
 typedef struct board_event
 {
@@ -28,6 +30,9 @@ typedef struct board_event
 typedef struct board
 {
     piece_t squares[SQUARE_COUNT];
+    piecepos_t white_piece_positions;
+    piecepos_t black_piece_positions;
+
     side_t side_to_move;
     castling_rights_t white_castling_rights;
     castling_rights_t black_castling_rights;

@@ -113,8 +113,8 @@ score_t evaluate(const board_t *board)
 {
     score_t score = 0;
 
-    score += _eval_material(board, SIDE_WHITE);
-    score -= _eval_material(board, SIDE_BLACK);
+    score += _eval_material(board, WHITE);
+    score -= _eval_material(board, BLACK);
 
     return score;
 }
@@ -123,7 +123,7 @@ score_t evaluate_relative(const board_t *board)
 {
     score_t score = evaluate(board);
 
-    if (board->side_to_move == SIDE_BLACK)
+    if (board->side_to_move == BLACK)
         score = -score;
 
     return score;
@@ -140,18 +140,18 @@ score_t _eval_material(const board_t *board, side_t side)
         if (!(piece & side))
             continue;
 
-        if ((piece & PIECE_PAWN))
-            material_value += VALUE_PAWN + ((side & SIDE_WHITE) ? WHITE_PAWN_VALUE_BONUSES : BLACK_PAWN_VALUE_BONUSES)[square];
-        else if (piece & PIECE_KNIGHT)
+        if ((piece & PAWN))
+            material_value += VALUE_PAWN + ((side & WHITE) ? WHITE_PAWN_VALUE_BONUSES : BLACK_PAWN_VALUE_BONUSES)[square];
+        else if (piece & KNIGHT)
             material_value += VALUE_KNIGHT + KNIGHT_VALUE_BONUSES[square];
-        else if (piece & PIECE_BISHOP)
-            material_value += VALUE_BISHOP + ((side & SIDE_WHITE) ? WHITE_BISHOP_VALUE_BONUSES : BLACK_BISHOP_VALUE_BONUSES)[square];
-        else if (piece & PIECE_ROOK)
-            material_value += VALUE_ROOK + ((side & SIDE_WHITE) ? WHITE_ROOK_VALUE_BONUSES : BLACK_ROOK_VALUE_BONUSES)[square];
-        else if (piece & PIECE_QUEEN)
+        else if (piece & BISHOP)
+            material_value += VALUE_BISHOP + ((side & WHITE) ? WHITE_BISHOP_VALUE_BONUSES : BLACK_BISHOP_VALUE_BONUSES)[square];
+        else if (piece & ROOK)
+            material_value += VALUE_ROOK + ((side & WHITE) ? WHITE_ROOK_VALUE_BONUSES : BLACK_ROOK_VALUE_BONUSES)[square];
+        else if (piece & QUEEN)
             material_value += VALUE_QUEEN + QUEEN_VALUE_BONUSES[square];
-        else if (piece & PIECE_KING)
-            material_value += VALUE_KING + ((side & SIDE_WHITE) ? WHITE_KING_VALUE_BONUSES : BLACK_KING_VALUE_BONUSES)[square];
+        else if (piece & KING)
+            material_value += VALUE_KING + ((side & WHITE) ? WHITE_KING_VALUE_BONUSES : BLACK_KING_VALUE_BONUSES)[square];
         }
 
     return material_value;

@@ -1,8 +1,7 @@
 #include "zobrist.h"
 #include "random.h"
 
-#define WHITE_PAWN (SIDE_WHITE | PIECE_PAWN)
-#define BLACK_KING (SIDE_BLACK | PIECE_KING)
+#define Z_WHITE_PAWN (WHITE | PAWN)
 
 #define BLACK_TO_MOVE_FEATURE 6144
 #define WHITE_KINGSIDE_CASTLING_RIGHTS_FEATURE 6145
@@ -28,7 +27,7 @@ zobrist_t zobrist_hash(const board_t *board)
 	for (square_t square = SQUARE_MIN; square <= SQUARE_MAX; square++)
 	{
 		piece_t piece = board_get(board, square); // (65 - 160)
-		int piece_int = (int)piece - WHITE_PAWN;  // (0 - 95)
+		int piece_int = (int)piece - Z_WHITE_PAWN;  // (0 - 95)
 
 		int feature_key = 64 * piece_int + square; // feature index (0 - 6143)
 		if (piece != PIECE_NONE)
@@ -36,7 +35,7 @@ zobrist_t zobrist_hash(const board_t *board)
 	}
 
 	// Black to move (feature index 6144)
-	if (board->side_to_move == SIDE_BLACK)
+	if (board->side_to_move == BLACK)
 		hash ^= zobrist_features[BLACK_TO_MOVE_FEATURE];
 
 	// Castling rights (feature index 6145 - 6148)
@@ -67,16 +66,16 @@ zobrist_t zobrist_update_piece(const board_t *board, square_t square, piece_t ol
 	zobrist_t hash = board->hash;
 	int square_int = SQUARE_RANK(square) * FILE_COUNT + SQUARE_FILE(square); // (0 - 63)
 
-	if (old_piece >= WHITE_PAWN)
+	if (old_piece >= Z_WHITE_PAWN)
 	{
-		int old_piece_int = (int)old_piece - WHITE_PAWN;	   // (0 - 95)
+		int old_piece_int = (int)old_piece - Z_WHITE_PAWN;	   // (0 - 95)
 		int old_feature_key = 64 * old_piece_int + square_int; // (0 - 6143)
 		hash ^= zobrist_features[old_feature_key];
 	}
 
-	if (new_piece >= WHITE_PAWN)
+	if (new_piece >= Z_WHITE_PAWN)
 	{
-		int new_piece_int = (int)new_piece - WHITE_PAWN;	   // (0 - 95)
+		int new_piece_int = (int)new_piece - Z_WHITE_PAWN;	   // (0 - 95)
 		int new_feature_key = 64 * new_piece_int + square_int; // (0 - 6143)
 		hash ^= zobrist_features[new_feature_key];
 	}

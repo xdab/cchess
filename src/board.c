@@ -25,40 +25,87 @@
 #define PUT_LOWER_EDGE(stream) fputs(HORIZONTAL_EDGE, stream)
 #endif
 
+const square_t INITIAL_SQUARE_CONTENTS[SQUARE_COUNT] = {
+    BLACK | ROOK,
+    BLACK | KNIGHT,
+    BLACK | BISHOP,
+    BLACK | QUEEN,
+    BLACK | KING,
+    BLACK | BISHOP,
+    BLACK | KNIGHT,
+    BLACK | ROOK,
+
+    BLACK | PAWN,
+    BLACK | PAWN,
+    BLACK | PAWN,
+    BLACK | PAWN,
+    BLACK | PAWN,
+    BLACK | PAWN,
+    BLACK | PAWN,
+    BLACK | PAWN,
+
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+    PIECE_NONE,
+
+    WHITE | PAWN,
+    WHITE | PAWN,
+    WHITE | PAWN,
+    WHITE | PAWN,
+    WHITE | PAWN,
+    WHITE | PAWN,
+    WHITE | PAWN,
+    WHITE | PAWN,
+
+    WHITE | ROOK,
+    WHITE | KNIGHT,
+    WHITE | BISHOP,
+    WHITE | QUEEN,
+    WHITE | KING,
+    WHITE | BISHOP,
+    WHITE | KNIGHT,
+    WHITE | ROOK,
+};
+
 void board_init(board_t *board)
 {
-    memset(board->squares, PIECE_NONE, SQUARE_COUNT);
-    board->hash = 0;
-    
-    board_set(board, A1, PIECE_ROOK | SIDE_WHITE);
-    board_set(board, B1, PIECE_KNIGHT | SIDE_WHITE);
-    board_set(board, C1, PIECE_BISHOP | SIDE_WHITE);
-    board_set(board, D1, PIECE_QUEEN | SIDE_WHITE);
-    board_set(board, E1, PIECE_KING | SIDE_WHITE);
-    board_set(board, F1, PIECE_BISHOP | SIDE_WHITE);
-    board_set(board, G1, PIECE_KNIGHT | SIDE_WHITE);
-    board_set(board, H1, PIECE_ROOK | SIDE_WHITE);
+    memcpy(board->squares, INITIAL_SQUARE_CONTENTS, SQUARE_COUNT);
+    piecepos_init_white(&board->white_piece_positions);
+    piecepos_init_black(&board->black_piece_positions);
 
-    for (file_t file = FILE_A; file <= FILE_H; file++)
-        board_set(board, SQUARE_OF(file, RANK_2), PIECE_PAWN | SIDE_WHITE);
-
-    board_set(board, A8, PIECE_ROOK | SIDE_BLACK);
-    board_set(board, B8, PIECE_KNIGHT | SIDE_BLACK);
-    board_set(board, C8, PIECE_BISHOP | SIDE_BLACK);
-    board_set(board, D8, PIECE_QUEEN | SIDE_BLACK);
-    board_set(board, E8, PIECE_KING | SIDE_BLACK);
-    board_set(board, F8, PIECE_BISHOP | SIDE_BLACK);
-    board_set(board, G8, PIECE_KNIGHT | SIDE_BLACK);
-    board_set(board, H8, PIECE_ROOK | SIDE_BLACK);
-
-    for (file_t file = FILE_A; file <= FILE_H; file++)
-        board_set(board, SQUARE_OF(file, RANK_7), PIECE_PAWN | SIDE_BLACK);
-
-    for (file_t file = FILE_A; file <= FILE_H; file++)
-        for (rank_t rank = RANK_3; rank <= RANK_6; rank++)
-            board_set(board, SQUARE_OF(file, rank), PIECE_NONE);
-
-    board->side_to_move = SIDE_WHITE;
+    board->side_to_move = WHITE;
     board->white_castling_rights = CASTLING_RIGHTS_KINGSIDE | CASTLING_RIGHTS_QUEENSIDE;
     board->black_castling_rights = CASTLING_RIGHTS_KINGSIDE | CASTLING_RIGHTS_QUEENSIDE;
     board->en_passant_square = SQUARE_NONE;
@@ -66,11 +113,14 @@ void board_init(board_t *board)
     board->halfmove_clock = 0;
     board->fullmove_number = 1;
     board->history_size = 0;
+    board->hash = zobrist_hash(board);
 }
 
 void board_clone(const board_t *board, board_t *clone)
 {
     memcpy(clone->squares, board->squares, SQUARE_COUNT);
+    memcpy(&clone->white_piece_positions, &board->white_piece_positions, sizeof(piecepos_t));
+    memcpy(&clone->black_piece_positions, &board->black_piece_positions, sizeof(piecepos_t));
 
     clone->side_to_move = board->side_to_move;
     clone->white_castling_rights = board->white_castling_rights;
@@ -99,50 +149,50 @@ void board_print(board_t *board, FILE *stream)
 
 #ifndef CCHESS_UNICODE
             char piece_char = SYMBOL_NONE;
-            if (piece & PIECE_PAWN)
+            if (piece & PAWN)
                 piece_char = SYMBOL_PAWN;
-            else if (piece & PIECE_KNIGHT)
+            else if (piece & KNIGHT)
                 piece_char = SYMBOL_KNIGHT;
-            else if (piece & PIECE_BISHOP)
+            else if (piece & BISHOP)
                 piece_char = SYMBOL_BISHOP;
-            else if (piece & PIECE_ROOK)
+            else if (piece & ROOK)
                 piece_char = SYMBOL_ROOK;
-            else if (piece & PIECE_QUEEN)
+            else if (piece & QUEEN)
                 piece_char = SYMBOL_QUEEN;
-            else if (piece & PIECE_KING)
+            else if (piece & KING)
                 piece_char = SYMBOL_KING;
-            if (piece & SIDE_BLACK)
+            if (piece & BLACK)
                 piece_char = tolower(piece_char);
             fputc(piece_char, stream);
 #else
-            if (piece & SIDE_WHITE)
+            if (piece & WHITE)
             {
-                if (piece & PIECE_PAWN)
+                if (piece & PAWN)
                     fputs("♙", stream);
-                else if (piece & PIECE_KNIGHT)
+                else if (piece & KNIGHT)
                     fputs("♘", stream);
-                else if (piece & PIECE_BISHOP)
+                else if (piece & BISHOP)
                     fputs("♗", stream);
-                else if (piece & PIECE_ROOK)
+                else if (piece & ROOK)
                     fputs("♖", stream);
-                else if (piece & PIECE_QUEEN)
+                else if (piece & QUEEN)
                     fputs("♕", stream);
-                else if (piece & PIECE_KING)
+                else if (piece & KING)
                     fputs("♔", stream);
             }
-            else if (piece & SIDE_BLACK)
+            else if (piece & BLACK)
             {
-                if (piece & PIECE_PAWN)
+                if (piece & PAWN)
                     fputs("♟", stream);
-                else if (piece & PIECE_KNIGHT)
+                else if (piece & KNIGHT)
                     fputs("♞", stream);
-                else if (piece & PIECE_BISHOP)
+                else if (piece & BISHOP)
                     fputs("♝", stream);
-                else if (piece & PIECE_ROOK)
+                else if (piece & ROOK)
                     fputs("♜", stream);
-                else if (piece & PIECE_QUEEN)
+                else if (piece & QUEEN)
                     fputs("♛", stream);
-                else if (piece & PIECE_KING)
+                else if (piece & KING)
                     fputs("♚", stream);
             }
             else
@@ -175,9 +225,13 @@ void board_make_move(board_t *board, move_t move)
 {
     square_t from = move_get_from(move);
     piece_t moved_piece = board_get(board, from);
+    piece_t promoted_piece = move_get_promoted_piece(move);
 
     square_t to = move_get_to(move);
     piece_t captured_piece = board_get(board, to);
+
+    // Update piece positions
+    piecepos_update(&board->white_piece_positions, &board->black_piece_positions, from, to, moved_piece, promoted_piece, captured_piece);
 
     // Store event in history
     if (board->history_size == BOARD_HISTORY_SIZE)
@@ -194,15 +248,12 @@ void board_make_move(board_t *board, move_t move)
     board->history[board->history_size].halfmove_clock = board->halfmove_clock;
     board->history_size++;
 
-    piece_t promoted_piece = move_get_promoted_piece(move);
-    if (promoted_piece != PIECE_NONE)
-        moved_piece = promoted_piece | (moved_piece & SIDE_MASK);
-
     board_set(board, from, PIECE_NONE);
-    board_set(board, to, moved_piece);
-    board->side_to_move = (moved_piece & SIDE_WHITE) ? SIDE_BLACK : SIDE_WHITE;
-    board->halfmove_clock = ((captured_piece != PIECE_NONE) || (moved_piece & PIECE_PAWN)) ? 0 : (board->halfmove_clock + 1);
-    board->fullmove_number += (board->side_to_move == SIDE_BLACK);
+    board_set(board, to, (promoted_piece != PIECE_NONE) ? (promoted_piece | (moved_piece & SIDE_MASK)) : moved_piece);
+
+    board->side_to_move = (moved_piece & WHITE) ? BLACK : WHITE;
+    board->halfmove_clock = ((captured_piece != PIECE_NONE) || (moved_piece & PAWN)) ? 0 : (board->halfmove_clock + 1);
+    board->fullmove_number += (board->side_to_move == BLACK);
 }
 
 void board_unmake_move(board_t *board)
@@ -221,14 +272,14 @@ void board_unmake_move(board_t *board)
 
     piece_t promoted_piece = move_get_promoted_piece(move);
     if (promoted_piece != PIECE_NONE)
-        moved_piece = PIECE_PAWN | (moved_piece & SIDE_MASK);
+        moved_piece = PAWN | (moved_piece & SIDE_MASK);
 
     board_set(board, from, moved_piece);
     board_set(board, to, captured_piece);
-    board->side_to_move = (moved_piece & SIDE_WHITE) ? SIDE_WHITE : SIDE_BLACK;
+    board->side_to_move = (moved_piece & WHITE) ? WHITE : BLACK;
     board->white_castling_rights = board->history[board->history_size].white_castling_rights;
     board->black_castling_rights = board->history[board->history_size].black_castling_rights;
     board->en_passant_square = board->history[board->history_size].en_passant_square;
     board->halfmove_clock = board->history[board->history_size].halfmove_clock;
-    board->fullmove_number -= (board->side_to_move == SIDE_BLACK);
+    board->fullmove_number -= (board->side_to_move == BLACK);
 }
