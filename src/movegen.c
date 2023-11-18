@@ -79,11 +79,6 @@ int _movegen_generate(const board_t *board, const piecepos_t *piece_positions, m
 {
     int move_count = 0;
 
-    if (piece_positions->has_pawns)
-        for (int i = 0; i < 8; i++)
-            if (piece_positions->pawns[i] != SQUARE_NONE)
-                _movegen_generate_pawn_moves(board, out_moves, &move_count, piece_positions->pawns[i]);
-
     if (piece_positions->has_promoted_pieces)
     {
         if (piece_positions->has_promoted_queens)
@@ -127,6 +122,11 @@ int _movegen_generate(const board_t *board, const piecepos_t *piece_positions, m
 
     if (piece_positions->queens_knight != SQUARE_NONE)
         _movegen_generate_knight_moves(board, out_moves, &move_count, piece_positions->queens_knight);
+
+    if (piece_positions->has_pawns)
+        for (int i = 0; i < 8; i++)
+            if (piece_positions->pawns[i] != SQUARE_NONE)
+                _movegen_generate_pawn_moves(board, out_moves, &move_count, piece_positions->pawns[i]);
 
     if (piece_positions->king != SQUARE_NONE)
         _movegen_generate_king_moves(board, out_moves, &move_count, piece_positions->king);
