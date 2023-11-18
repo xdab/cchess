@@ -40,7 +40,11 @@ int main(int argc, char *argv[])
 
     board_init(&board);
 
+    board_make_move(&board, move_regular(E2, E4));
     board_make_move(&board, move_regular(E7, E5));
+    board_make_move(&board, move_regular(G1, F3));
+    board_make_move(&board, move_regular(B8, C6));
+    board_make_move(&board, move_regular(F1, B5));
     nice_print(&board);
 
     score_t static_score = 0;

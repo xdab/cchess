@@ -51,7 +51,7 @@ void piecepos_init_black(piecepos_t *piece_positions);
  * @param piece_positions The piece positions to print.
  * @param stream The stream to print to.
  */
-void piecepos_print(piecepos_t *piece_positions, FILE *stream);
+void piecepos_print(const piecepos_t *piece_positions, FILE *stream);
 
 /**
  * Updates the piece positions after a move.

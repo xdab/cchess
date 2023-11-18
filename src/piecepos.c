@@ -72,7 +72,7 @@ void piecepos_init_black(piecepos_t *piece_positions)
 	piece_positions->has_promoted_knights = false;
 }
 
-void piecepos_print(piecepos_t *piece_positions, FILE *stream)
+void piecepos_print(const piecepos_t *piece_positions, FILE *stream)
 {
 	fprintf(stream, "King: %c%c\n", FILE_SYMBOL(SQUARE_FILE(piece_positions->king)), RANK_SYMBOL(SQUARE_RANK(piece_positions->king)));
 

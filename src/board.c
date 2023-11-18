@@ -132,7 +132,7 @@ void board_clone(const board_t *board, board_t *clone)
     clone->hash = board->hash;
 }
 
-void board_print(board_t *board, FILE *stream)
+void board_print(const board_t *board, FILE *stream)
 {
     PUT_UPPER_EDGE(stream);
 

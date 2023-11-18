@@ -26,6 +26,8 @@ const square_t BLACK_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE = B8;
 const square_t BLACK_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE_2 = D8;
 const square_t BLACK_QUEENSIDE_CASTLING_INITIAL_ROOK_SQUARE = A8;
 
+int _movegen_generate(const board_t *board, const piecepos_t *piece_positions, move_t *out_moves);
+
 void _movegen_generate_pawn_moves(const board_t *board, move_t *out_moves, int *out_move_count, square_t from);
 void _movegen_generate_white_pawn_pushes(const board_t *board, move_t *out_moves, int *out_move_count, square_t from);
 void _movegen_generate_white_pawn_captures(const board_t *board, move_t *out_moves, int *out_move_count, square_t from);
@@ -69,29 +71,67 @@ void _movegen_add_if_target_enemy(const board_t *board, move_t *out_moves, int *
 
 void movegen_generate(const board_t *board, move_t *out_moves, int *out_move_count)
 {
-    *out_move_count = 0;
-    side_t side = board->side_to_move;
+    const piecepos_t *piece_positions = (board->side_to_move == WHITE) ? &board->white_piece_positions : &board->black_piece_positions;
+    *out_move_count = _movegen_generate(board, piece_positions, out_moves);
+}
 
-    for (square_t square = SQUARE_MIN; square <= SQUARE_MAX; square++)
+int _movegen_generate(const board_t *board, const piecepos_t *piece_positions, move_t *out_moves)
+{
+    int move_count = 0;
+
+    if (piece_positions->has_pawns)
+        for (int i = 0; i < 8; i++)
+            if (piece_positions->pawns[i] != SQUARE_NONE)
+                _movegen_generate_pawn_moves(board, out_moves, &move_count, piece_positions->pawns[i]);
+
+    if (piece_positions->has_promoted_pieces)
     {
-        piece_t piece = board_get(board, square);
-        if (!piece)
-            continue;
-        if (!(piece & side))
-            continue;
-        if (piece & PAWN)
-            _movegen_generate_pawn_moves(board, out_moves, out_move_count, square);
-        else if (piece & KNIGHT)
-            _movegen_generate_knight_moves(board, out_moves, out_move_count, square);
-        else if (piece & BISHOP)
-            _movegen_generate_bishop_moves(board, out_moves, out_move_count, square);
-        else if (piece & ROOK)
-            _movegen_generate_rook_moves(board, out_moves, out_move_count, square);
-        else if (piece & QUEEN)
-            _movegen_generate_queen_moves(board, out_moves, out_move_count, square);
-        else if (piece & KING)
-            _movegen_generate_king_moves(board, out_moves, out_move_count, square);
+        if (piece_positions->has_promoted_queens)
+            for (int i = 0; i < 8; i++)
+                if (piece_positions->promoted_queens[i] != SQUARE_NONE)
+                    _movegen_generate_queen_moves(board, out_moves, &move_count, piece_positions->promoted_queens[i]);
+
+        if (piece_positions->has_promoted_rooks)
+            for (int i = 0; i < 8; i++)
+                if (piece_positions->promoted_rooks[i] != SQUARE_NONE)
+                    _movegen_generate_rook_moves(board, out_moves, &move_count, piece_positions->promoted_rooks[i]);
+
+        if (piece_positions->has_promoted_bishops)
+            for (int i = 0; i < 8; i++)
+                if (piece_positions->promoted_bishops[i] != SQUARE_NONE)
+                    _movegen_generate_bishop_moves(board, out_moves, &move_count, piece_positions->promoted_bishops[i]);
+
+        if (piece_positions->has_promoted_knights)
+            for (int i = 0; i < 8; i++)
+                if (piece_positions->promoted_knights[i] != SQUARE_NONE)
+                    _movegen_generate_knight_moves(board, out_moves, &move_count, piece_positions->promoted_knights[i]);
     }
+
+    if (piece_positions->queen != SQUARE_NONE)
+        _movegen_generate_queen_moves(board, out_moves, &move_count, piece_positions->queen);
+
+    if (piece_positions->kings_rook != SQUARE_NONE)
+        _movegen_generate_rook_moves(board, out_moves, &move_count, piece_positions->kings_rook);
+
+    if (piece_positions->queens_rook != SQUARE_NONE)
+        _movegen_generate_rook_moves(board, out_moves, &move_count, piece_positions->queens_rook);
+
+    if (piece_positions->kings_bishop != SQUARE_NONE)
+        _movegen_generate_bishop_moves(board, out_moves, &move_count, piece_positions->kings_bishop);
+
+    if (piece_positions->queens_bishop != SQUARE_NONE)
+        _movegen_generate_bishop_moves(board, out_moves, &move_count, piece_positions->queens_bishop);
+
+    if (piece_positions->kings_knight != SQUARE_NONE)
+        _movegen_generate_knight_moves(board, out_moves, &move_count, piece_positions->kings_knight);
+
+    if (piece_positions->queens_knight != SQUARE_NONE)
+        _movegen_generate_knight_moves(board, out_moves, &move_count, piece_positions->queens_knight);
+
+    if (piece_positions->king != SQUARE_NONE)
+        _movegen_generate_king_moves(board, out_moves, &move_count, piece_positions->king);
+
+    return move_count;
 }
 
 void _movegen_generate_pawn_moves(const board_t *board, move_t *out_moves, int *out_move_count, square_t square)

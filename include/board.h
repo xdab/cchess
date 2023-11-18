@@ -67,7 +67,7 @@ void board_clone(const board_t *board, board_t *clone);
  * @param board The board to print.
  * @param stream The stream to print to.
  */
-void board_print(board_t *board, FILE *stream);
+void board_print(const board_t *board, FILE *stream);
 
 /**
  * Gets the piece at the specified square.
