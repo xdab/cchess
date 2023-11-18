@@ -5,7 +5,9 @@
 
 #define CENTIPAWN_MULTIPLIER 100.0
 
-typedef int centipawns_t;
+#define VALUE_CHECKMATE 100000
+
+typedef int score_t;
 
 /**
  * Evaluates the board.
@@ -13,6 +15,14 @@ typedef int centipawns_t;
  * @param board The board to evaluate.
  * @return The evaluation of the board in centipawns.
  */
-centipawns_t eval(const board_t *board);
+score_t evaluate(const board_t *board);
+
+/**
+ * Evaluates the board relative to the side to move.
+ *
+ * @param board The board to evaluate.
+ * @return The evaluation of the board in centipawns.
+ */
+score_t evaluate_relative(const board_t *board);
 
 #endif

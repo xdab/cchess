@@ -10,7 +10,7 @@
 #include "move.h"
 #include "movegen.h"
 #include "fen.h"
-#include "deepeval.h"
+#include "search.h"
 #include "random.h"
 #include "zobrist.h"
 #endif
@@ -30,19 +30,25 @@ int main(int argc, char *argv[])
     board_init(&board);
     board_print(&board, stderr);
 
-    move_t moves[256];
-    int move_count = 0;
-    movegen_generate(&board, moves, &move_count);
-
-    char uci_move[6];
-    for (int i = 0; i < move_count; i++)
+    score_t static_score = 0;
+    while ((static_score > -10000) && (static_score < 10000))
     {
-        move_to_uci(moves[i], uci_move);
-        fprintf(stderr, "%s ", uci_move);
-    }
-    fputs("\n", stderr);
+        static_score = evaluate(&board);
+        printf("Static score: %+d cp\n", static_score);
 
-    fprintf(stderr, "Move count: %d\n", move_count);
+        score_t search_score;
+        move_t best_move;
+        const int depth = 6;
+        search_score = search(&board, depth, &best_move);
+        printf("Score: %+d cp\n", search_score);
+
+        char best_move_uci[6];
+        move_to_uci(best_move, best_move_uci);
+        printf("Best move: %s\n", best_move_uci);
+
+        board_make_move(&board, best_move);
+        board_print(&board, stdout);
+    }
 
     return EXIT_SUCCESS;
 #endif

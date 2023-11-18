@@ -126,7 +126,7 @@ int uci_loop()
                 token = strtok(NULL, " ");
             }
 
-            centipawns_t cp = eval(&board);
+            score_t cp = evaluate(&board);
             snprintf(response, RESPONSE_BUF_LENGTH, "info depth 1 score cp %d time 1 nodes 1 nps 1 pv e2e4", cp);
             reply(response);
 
