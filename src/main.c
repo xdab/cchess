@@ -13,6 +13,7 @@
 #include "search.h"
 #include "random.h"
 #include "zobrist.h"
+#include "ttable.h"
 #endif
 
 void nice_print(const board_t *board)
@@ -37,6 +38,8 @@ int main(int argc, char *argv[])
     board_t board;
     board_t work_board;
     zobrist_init();
+    const int transposition_table_size = 1 << 18;
+    ttable_init(transposition_table_size);
 
     board_init(&board);
 
@@ -46,7 +49,6 @@ int main(int argc, char *argv[])
     board_make_move(&board, move_regular(B8, C6));
     board_make_move(&board, move_regular(F1, B5));
     board_make_move(&board, move_regular(C8, G4));
-    board_make_move(&board, MOVE_WHITE_OO);
 
     score_t static_score = 0;
     while ((static_score > -10000) && (static_score < 10000))

@@ -8,7 +8,7 @@ file(GLOB sources src/*.c)
 list(FILTER sources EXCLUDE REGEX ".*main\\.c$")
 add_executable(cchess src/main.c ${sources} ${headers})
 set(CMAKE_C_FLAGS_DEBUG "-g -DDEBUG")
-
+ 
 # enable_testing()
 
 # macro(add_unit_test test_file)
