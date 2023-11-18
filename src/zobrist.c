@@ -25,19 +25,15 @@ zobrist_t zobrist_hash(const board_t *board)
 	zobrist_t hash = 0;
 
 	// Specific pieces on specific squares (0x0000 - 0xFFFF)
-	for (rank_t rank = RANK_1; rank <= RANK_8; rank++)
-		for (file_t file = FILE_A; file <= FILE_H; file++)
-		{
-			square_t square = SQUARE_OF(file, rank);
-			int square_int = rank * FILE_COUNT + file; // (0 - 63)
+	for (square_t square = SQUARE_MIN; square <= SQUARE_MAX; square++)
+	{
+		piece_t piece = board_get(board, square); // (65 - 160)
+		int piece_int = (int)piece - WHITE_PAWN;  // (0 - 95)
 
-			piece_t piece = board_get(board, square); // (65 - 160)
-			int piece_int = (int)piece - WHITE_PAWN;  // (0 - 95)
-
-			int feature_key = 64 * piece_int + square_int; // feature index (0 - 6143)
-			if (piece != PIECE_NONE)
-				hash ^= zobrist_features[feature_key];
-		}
+		int feature_key = 64 * piece_int + square; // feature index (0 - 6143)
+		if (piece != PIECE_NONE)
+			hash ^= zobrist_features[feature_key];
+	}
 
 	// Black to move (feature index 6144)
 	if (board->side_to_move == SIDE_BLACK)

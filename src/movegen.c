@@ -8,6 +8,24 @@
 #define ADDED_EMPTY 1
 #define ADDED_ENEMY 2
 
+const square_t WHITE_KINGSIDE_CASTLING_SQUARE = G1;
+const square_t WHITE_KINGSIDE_CASTLING_INTERMEDIATE_SQUARE = F1;
+const square_t WHITE_KINGSIDE_CASTLING_INITIAL_ROOK_SQUARE = H1;
+
+const square_t WHITE_QUEENSIDE_CASTLING_SQUARE = C1;
+const square_t WHITE_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE = B1;
+const square_t WHITE_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE_2 = D1;
+const square_t WHITE_QUEENSIDE_CASTLING_INITIAL_ROOK_SQUARE = A1;
+
+const square_t BLACK_KINGSIDE_CASTLING_SQUARE = G8;
+const square_t BLACK_KINGSIDE_CASTLING_INTERMEDIATE_SQUARE = F8;
+const square_t BLACK_KINGSIDE_CASTLING_INITIAL_ROOK_SQUARE = H8;
+
+const square_t BLACK_QUEENSIDE_CASTLING_SQUARE = C8;
+const square_t BLACK_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE = B8;
+const square_t BLACK_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE_2 = D8;
+const square_t BLACK_QUEENSIDE_CASTLING_INITIAL_ROOK_SQUARE = A8;
+
 void _movegen_generate_pawn_moves(const board_t *board, move_t *out_moves, int *out_move_count, square_t from);
 void _movegen_generate_white_pawn_pushes(const board_t *board, move_t *out_moves, int *out_move_count, square_t from);
 void _movegen_generate_white_pawn_captures(const board_t *board, move_t *out_moves, int *out_move_count, square_t from);
@@ -54,28 +72,26 @@ void movegen_generate(const board_t *board, move_t *out_moves, int *out_move_cou
     *out_move_count = 0;
     side_t side = board->side_to_move;
 
-    for (file_t file = FILE_A; file <= FILE_H; file++)
-        for (rank_t rank = RANK_1; rank <= RANK_8; rank++)
-        {
-            square_t square = SQUARE_OF(file, rank);
-            piece_t piece = board_get(board, square);
-            if (!piece)
-                continue;
-            if (!(piece & side))
-                continue;
-            if (piece & PIECE_PAWN)
-                _movegen_generate_pawn_moves(board, out_moves, out_move_count, square);
-            else if (piece & PIECE_KNIGHT)
-                _movegen_generate_knight_moves(board, out_moves, out_move_count, square);
-            else if (piece & PIECE_BISHOP)
-                _movegen_generate_bishop_moves(board, out_moves, out_move_count, square);
-            else if (piece & PIECE_ROOK)
-                _movegen_generate_rook_moves(board, out_moves, out_move_count, square);
-            else if (piece & PIECE_QUEEN)
-                _movegen_generate_queen_moves(board, out_moves, out_move_count, square);
-            else if (piece & PIECE_KING)
-                _movegen_generate_king_moves(board, out_moves, out_move_count, square);
-        }
+    for (square_t square = SQUARE_MIN; square <= SQUARE_MAX; square++)
+    {
+        piece_t piece = board_get(board, square);
+        if (!piece)
+            continue;
+        if (!(piece & side))
+            continue;
+        if (piece & PIECE_PAWN)
+            _movegen_generate_pawn_moves(board, out_moves, out_move_count, square);
+        else if (piece & PIECE_KNIGHT)
+            _movegen_generate_knight_moves(board, out_moves, out_move_count, square);
+        else if (piece & PIECE_BISHOP)
+            _movegen_generate_bishop_moves(board, out_moves, out_move_count, square);
+        else if (piece & PIECE_ROOK)
+            _movegen_generate_rook_moves(board, out_moves, out_move_count, square);
+        else if (piece & PIECE_QUEEN)
+            _movegen_generate_queen_moves(board, out_moves, out_move_count, square);
+        else if (piece & PIECE_KING)
+            _movegen_generate_king_moves(board, out_moves, out_move_count, square);
+    }
 }
 
 void _movegen_generate_pawn_moves(const board_t *board, move_t *out_moves, int *out_move_count, square_t square)
@@ -253,7 +269,7 @@ void _movegen_generate_black_pawn_pushes(const board_t *board, move_t *out_moves
             out_moves[*out_move_count] = move_regular(square, in_front);
             (*out_move_count)++;
 
-            square_t two_in_front = SQUARE_OF(file, rank - 2);
+            square_t two_in_front = SQUARE_OF(file, RANK_5);
             if (board_get(board, two_in_front) == PIECE_NONE)
             {
                 // Push 2
@@ -333,19 +349,14 @@ void _movegen_generate_king_castling(const board_t *board, move_t *out_moves, in
 {
     if (board->side_to_move == SIDE_WHITE)
     {
-        const square_t WHITE_KINGSIDE_CASTLING_SQUARE = SQUARE_OF(FILE_G, RANK_1);
-        const square_t WHITE_KINGSIDE_CASTLING_INTERMEDIATE_SQUARE = SQUARE_OF(FILE_F, RANK_1);
-
-        const square_t WHITE_QUEENSIDE_CASTLING_SQUARE = SQUARE_OF(FILE_C, RANK_1);
-        const square_t WHITE_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE = SQUARE_OF(FILE_D, RANK_1);
-        const square_t WHITE_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE_2 = SQUARE_OF(FILE_B, RANK_1);
-
         if (board->white_castling_rights & CASTLING_RIGHTS_KINGSIDE)
         {
             bool is_intermediate_square_empty = board_get(board, WHITE_KINGSIDE_CASTLING_INTERMEDIATE_SQUARE) == PIECE_NONE;
             bool is_target_square_empty = board_get(board, WHITE_KINGSIDE_CASTLING_SQUARE) == PIECE_NONE;
+            piece_t initial_rook_square_piece = board_get(board, WHITE_KINGSIDE_CASTLING_INITIAL_ROOK_SQUARE);
+            bool is_initial_rook_square_white_rook = initial_rook_square_piece == (PIECE_ROOK | SIDE_WHITE);
 
-            if (is_intermediate_square_empty && is_target_square_empty)
+            if (is_intermediate_square_empty && is_target_square_empty & is_initial_rook_square_white_rook)
             {
                 out_moves[*out_move_count] = move_regular(square, WHITE_KINGSIDE_CASTLING_SQUARE);
                 (*out_move_count)++;
@@ -357,8 +368,10 @@ void _movegen_generate_king_castling(const board_t *board, move_t *out_moves, in
             bool is_intermediate_square_empty = board_get(board, WHITE_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE) == PIECE_NONE;
             bool is_intermediate_square_2_empty = board_get(board, WHITE_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE_2) == PIECE_NONE;
             bool is_target_square_empty = board_get(board, WHITE_QUEENSIDE_CASTLING_SQUARE) == PIECE_NONE;
+            piece_t initial_rook_square_piece = board_get(board, WHITE_QUEENSIDE_CASTLING_INITIAL_ROOK_SQUARE);
+            bool is_initial_rook_square_white_rook = initial_rook_square_piece == (PIECE_ROOK | SIDE_WHITE);
 
-            if (is_intermediate_square_empty && is_intermediate_square_2_empty && is_target_square_empty)
+            if (is_intermediate_square_empty && is_intermediate_square_2_empty && is_target_square_empty && is_initial_rook_square_white_rook)
             {
                 out_moves[*out_move_count] = move_regular(square, WHITE_QUEENSIDE_CASTLING_SQUARE);
                 (*out_move_count)++;
@@ -368,19 +381,14 @@ void _movegen_generate_king_castling(const board_t *board, move_t *out_moves, in
 
     else if (board->side_to_move == SIDE_BLACK)
     {
-        const square_t BLACK_KINGSIDE_CASTLING_SQUARE = SQUARE_OF(FILE_G, RANK_8);
-        const square_t BLACK_KINGSIDE_CASTLING_INTERMEDIATE_SQUARE = SQUARE_OF(FILE_F, RANK_8);
-
-        const square_t BLACK_QUEENSIDE_CASTLING_SQUARE = SQUARE_OF(FILE_C, RANK_8);
-        const square_t BLACK_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE = SQUARE_OF(FILE_D, RANK_8);
-        const square_t BLACK_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE_2 = SQUARE_OF(FILE_B, RANK_8);
-
         if (board->black_castling_rights & CASTLING_RIGHTS_KINGSIDE)
         {
             bool is_intermediate_square_empty = board_get(board, BLACK_KINGSIDE_CASTLING_INTERMEDIATE_SQUARE) == PIECE_NONE;
             bool is_target_square_empty = board_get(board, BLACK_KINGSIDE_CASTLING_SQUARE) == PIECE_NONE;
+            piece_t initial_rook_square_piece = board_get(board, BLACK_KINGSIDE_CASTLING_INITIAL_ROOK_SQUARE);
+            bool is_initial_rook_square_black_rook = initial_rook_square_piece == (PIECE_ROOK | SIDE_BLACK);
 
-            if (is_intermediate_square_empty && is_target_square_empty)
+            if (is_intermediate_square_empty && is_target_square_empty && is_initial_rook_square_black_rook)
             {
                 out_moves[*out_move_count] = move_regular(square, BLACK_KINGSIDE_CASTLING_SQUARE);
                 (*out_move_count)++;
@@ -392,8 +400,10 @@ void _movegen_generate_king_castling(const board_t *board, move_t *out_moves, in
             bool is_intermediate_square_empty = board_get(board, BLACK_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE) == PIECE_NONE;
             bool is_intermediate_square_2_empty = board_get(board, BLACK_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE_2) == PIECE_NONE;
             bool is_target_square_empty = board_get(board, BLACK_QUEENSIDE_CASTLING_SQUARE) == PIECE_NONE;
+            piece_t initial_rook_square_piece = board_get(board, BLACK_QUEENSIDE_CASTLING_INITIAL_ROOK_SQUARE);
+            bool is_initial_rook_square_black_rook = initial_rook_square_piece == (PIECE_ROOK | SIDE_BLACK);
 
-            if (is_intermediate_square_empty && is_intermediate_square_2_empty && is_target_square_empty)
+            if (is_intermediate_square_empty && is_intermediate_square_2_empty && is_target_square_empty && is_initial_rook_square_black_rook)
             {
                 out_moves[*out_move_count] = move_regular(square, BLACK_QUEENSIDE_CASTLING_SQUARE);
                 (*out_move_count)++;
