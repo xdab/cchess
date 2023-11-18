@@ -1,112 +1,103 @@
 #ifndef SQUARE_H
 #define SQUARE_H
 
-#include <stdbool.h>
+#include "file.h"
+#include "rank.h"
 
-typedef unsigned char square_t;
+#include <stdint.h>
 
-/**
- * Returns the square of the given file and rank.
- *
- * @param file The file of the square.
- * @param rank The rank of the square.
- *
- * @return The square of the given file and rank.
- */
-square_t square_of(int file, int rank);
+typedef int8_t square_t;
 
-/**
- * Returns the file of the given square.
- *
- * @param square The square.
- *
- * @return The file of the given square.
- */
-int square_file(square_t square);
+#define SQUARE_NONE ((square_t)(-1))
 
-/**
- * Returns the rank of the given square.
- *
- * @param square The square.
- *
- * @return The rank of the given square.
- */
-int square_rank(square_t square);
+#define A8 ((square_t)0)
+#define B8 ((square_t)1)
+#define C8 ((square_t)2)
+#define D8 ((square_t)3)
+#define E8 ((square_t)4)
+#define F8 ((square_t)5)
+#define G8 ((square_t)6)
+#define H8 ((square_t)7)
 
-/**
- * Returns whether the given square is valid.
- *
- * @param square The square.
- *
- * @return Whether the given square is valid.
- */
-bool square_valid(square_t square);
+#define A7 ((square_t)8)
+#define B7 ((square_t)9)
+#define C7 ((square_t)10)
+#define D7 ((square_t)11)
+#define E7 ((square_t)12)
+#define F7 ((square_t)13)
+#define G7 ((square_t)14)
+#define H7 ((square_t)15)
 
-// Thanks Copilot ;-)
-#define SQUARE_NULL (0xFF)
-#define SQUARE_A1 (square_of(FILE_A, RANK_1))
-#define SQUARE_A2 (square_of(FILE_A, RANK_2))
-#define SQUARE_A3 (square_of(FILE_A, RANK_3))
-#define SQUARE_A4 (square_of(FILE_A, RANK_4))
-#define SQUARE_A5 (square_of(FILE_A, RANK_5))
-#define SQUARE_A6 (square_of(FILE_A, RANK_6))
-#define SQUARE_A7 (square_of(FILE_A, RANK_7))
-#define SQUARE_A8 (square_of(FILE_A, RANK_8))
-#define SQUARE_B1 (square_of(FILE_B, RANK_1))
-#define SQUARE_B2 (square_of(FILE_B, RANK_2))
-#define SQUARE_B3 (square_of(FILE_B, RANK_3))
-#define SQUARE_B4 (square_of(FILE_B, RANK_4))
-#define SQUARE_B5 (square_of(FILE_B, RANK_5))
-#define SQUARE_B6 (square_of(FILE_B, RANK_6))
-#define SQUARE_B7 (square_of(FILE_B, RANK_7))
-#define SQUARE_B8 (square_of(FILE_B, RANK_8))
-#define SQUARE_C1 (square_of(FILE_C, RANK_1))
-#define SQUARE_C2 (square_of(FILE_C, RANK_2))
-#define SQUARE_C3 (square_of(FILE_C, RANK_3))
-#define SQUARE_C4 (square_of(FILE_C, RANK_4))
-#define SQUARE_C5 (square_of(FILE_C, RANK_5))
-#define SQUARE_C6 (square_of(FILE_C, RANK_6))
-#define SQUARE_C7 (square_of(FILE_C, RANK_7))
-#define SQUARE_C8 (square_of(FILE_C, RANK_8))
-#define SQUARE_D1 (square_of(FILE_D, RANK_1))
-#define SQUARE_D2 (square_of(FILE_D, RANK_2))
-#define SQUARE_D3 (square_of(FILE_D, RANK_3))
-#define SQUARE_D4 (square_of(FILE_D, RANK_4))
-#define SQUARE_D5 (square_of(FILE_D, RANK_5))
-#define SQUARE_D6 (square_of(FILE_D, RANK_6))
-#define SQUARE_D7 (square_of(FILE_D, RANK_7))
-#define SQUARE_D8 (square_of(FILE_D, RANK_8))
-#define SQUARE_E1 (square_of(FILE_E, RANK_1))
-#define SQUARE_E2 (square_of(FILE_E, RANK_2))
-#define SQUARE_E3 (square_of(FILE_E, RANK_3))
-#define SQUARE_E4 (square_of(FILE_E, RANK_4))
-#define SQUARE_E5 (square_of(FILE_E, RANK_5))
-#define SQUARE_E6 (square_of(FILE_E, RANK_6))
-#define SQUARE_E7 (square_of(FILE_E, RANK_7))
-#define SQUARE_E8 (square_of(FILE_E, RANK_8))
-#define SQUARE_F1 (square_of(FILE_F, RANK_1))
-#define SQUARE_F2 (square_of(FILE_F, RANK_2))
-#define SQUARE_F3 (square_of(FILE_F, RANK_3))
-#define SQUARE_F4 (square_of(FILE_F, RANK_4))
-#define SQUARE_F5 (square_of(FILE_F, RANK_5))
-#define SQUARE_F6 (square_of(FILE_F, RANK_6))
-#define SQUARE_F7 (square_of(FILE_F, RANK_7))
-#define SQUARE_F8 (square_of(FILE_F, RANK_8))
-#define SQUARE_G1 (square_of(FILE_G, RANK_1))
-#define SQUARE_G2 (square_of(FILE_G, RANK_2))
-#define SQUARE_G3 (square_of(FILE_G, RANK_3))
-#define SQUARE_G4 (square_of(FILE_G, RANK_4))
-#define SQUARE_G5 (square_of(FILE_G, RANK_5))
-#define SQUARE_G6 (square_of(FILE_G, RANK_6))
-#define SQUARE_G7 (square_of(FILE_G, RANK_7))
-#define SQUARE_G8 (square_of(FILE_G, RANK_8))
-#define SQUARE_H1 (square_of(FILE_H, RANK_1))
-#define SQUARE_H2 (square_of(FILE_H, RANK_2))
-#define SQUARE_H3 (square_of(FILE_H, RANK_3))
-#define SQUARE_H4 (square_of(FILE_H, RANK_4))
-#define SQUARE_H5 (square_of(FILE_H, RANK_5))
-#define SQUARE_H6 (square_of(FILE_H, RANK_6))
-#define SQUARE_H7 (square_of(FILE_H, RANK_7))
-#define SQUARE_H8 (square_of(FILE_H, RANK_8))
+#define A6 ((square_t)16)
+#define B6 ((square_t)17)
+#define C6 ((square_t)18)
+#define D6 ((square_t)19)
+#define E6 ((square_t)20)
+#define F6 ((square_t)21)
+#define G6 ((square_t)22)
+#define H6 ((square_t)23)
+
+#define A5 ((square_t)24)
+#define B5 ((square_t)25)
+#define C5 ((square_t)26)
+#define D5 ((square_t)27)
+#define E5 ((square_t)28)
+#define F5 ((square_t)29)
+#define G5 ((square_t)30)
+#define H5 ((square_t)31)
+
+#define A4 ((square_t)32)
+#define B4 ((square_t)33)
+#define C4 ((square_t)34)
+#define D4 ((square_t)35)
+#define E4 ((square_t)36)
+#define F4 ((square_t)37)
+#define G4 ((square_t)38)
+#define H4 ((square_t)39)
+
+#define A3 ((square_t)40)
+#define B3 ((square_t)41)
+#define C3 ((square_t)42)
+#define D3 ((square_t)43)
+#define E3 ((square_t)44)
+#define F3 ((square_t)45)
+#define G3 ((square_t)46)
+#define H3 ((square_t)47)
+
+#define A2 ((square_t)48)
+#define B2 ((square_t)49)
+#define C2 ((square_t)50)
+#define D2 ((square_t)51)
+#define E2 ((square_t)52)
+#define F2 ((square_t)53)
+#define G2 ((square_t)54)
+#define H2 ((square_t)55)
+
+#define A1 ((square_t)56)
+#define B1 ((square_t)57)
+#define C1 ((square_t)58)
+#define D1 ((square_t)59)
+#define E1 ((square_t)60)
+#define F1 ((square_t)61)
+#define G1 ((square_t)62)
+#define H1 ((square_t)63)
+
+#define SQUARE_MIN A8
+#define SQUARE_MAX H1
+#define SQUARE_COUNT 64
+
+#define SQUARE_FILE(sq) ((sq) % 8)
+#define SQUARE_RANK(sq) (7 - ((sq) / 8))
+
+static inline square_t SQUARE_OF(file_t file, rank_t rank)
+{
+	if (file < FILE_A || file > FILE_H)
+		return SQUARE_NONE;
+	if (rank < RANK_1 || rank > RANK_8)
+		return SQUARE_NONE;
+	return (square_t)((7 - (rank)) * 8 + (file));
+}
+
+#define SQUARE_VALID(sq) (((sq) >= SQUARE_MIN) && ((sq) <= SQUARE_MAX))
 
 #endif

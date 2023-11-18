@@ -1,8 +1,8 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "ranks.h"
-#include "files.h"
+#include "rank.h"
+#include "file.h"
 #include "piece.h"
 #include "side.h"
 #include "castling.h"
@@ -27,7 +27,7 @@ typedef struct board_event
 
 typedef struct board
 {
-    piece_t pieces[RANK_COUNT][FILE_COUNT];
+    piece_t squares[SQUARE_COUNT];
     side_t side_to_move;
     castling_rights_t white_castling_rights;
     castling_rights_t black_castling_rights;

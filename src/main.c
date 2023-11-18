@@ -28,40 +28,21 @@ int main(int argc, char *argv[])
     zobrist_init();
 
     board_init(&board);
-    board_make_move(&board, move_uci("e2e4"));  
-    fprintf(stderr, "hash after e2e4: 0x%016lX\n", board.hash);
-    board_make_move(&board, move_uci("e7e5")); 
-    fprintf(stderr, "hash after e7e5: 0x%016lX\n", board.hash);
-    board_make_move(&board, move_uci("d2d4"));
-    fprintf(stderr, "hash after d2d4: 0x%016lX\n", board.hash);
-    board_make_move(&board, move_uci("d7d5"));
-    fprintf(stderr, "hash after d7d5: 0x%016lX\n", board.hash);
-
     board_print(&board, stderr);
 
-    board_init(&board);
-    board_make_move(&board, move_uci("d7d5"));
-    fprintf(stderr, "hash after d2d4: 0x%016lX\n", board.hash);
-    board_make_move(&board, move_uci("e2e4")); 
-    fprintf(stderr, "hash after d7d5: 0x%016lX\n", board.hash);
-    board_make_move(&board, move_uci("e7e5"));
-    fprintf(stderr, "hash after e2e4: 0x%016lX\n", board.hash);
-    board_make_move(&board, move_uci("d2d4"));
-    fprintf(stderr, "hash after e7e5: 0x%016lX\n", board.hash);
+    move_t moves[256];
+    int move_count = 0;
+    movegen_generate(&board, moves, &move_count);
 
-    board_print(&board, stderr);
+    char uci_move[6];
+    for (int i = 0; i < move_count; i++)
+    {
+        move_to_uci(moves[i], uci_move);
+        fprintf(stderr, "%s ", uci_move);
+    }
+    fputs("\n", stderr);
 
-    centipawns_t score = eval(&board);
-    fprintf(stderr, "\neval : %+f\n", score / CENTIPAWN_MULTIPLIER);
-
-    const int depth = 4;
-    move_t best_move;
-    centipawns_t deep_score = deep_eval(&board, depth, &best_move);
-    fprintf(stderr, "deep_eval: %+f\n", deep_score / CENTIPAWN_MULTIPLIER);
-
-    char best_move_uci[6];
-    move_to_uci(best_move, best_move_uci);
-    fprintf(stderr, "best_move: %s\n", best_move_uci);
+    fprintf(stderr, "Move count: %d\n", move_count);
 
     return EXIT_SUCCESS;
 #endif

@@ -6,7 +6,7 @@
 
 typedef unsigned int move_t;
 
-#define MOVE_NULL (move_regular(SQUARE_NULL, SQUARE_NULL))
+#define MOVE_NULL (move_regular(SQUARE_NONE, SQUARE_NONE))
 
 move_t move_regular(square_t from, square_t to);
 move_t move_promotion(square_t from, square_t to, piece_t promote_to);

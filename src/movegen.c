@@ -54,10 +54,10 @@ void movegen_generate(const board_t *board, move_t *out_moves, int *out_move_cou
     *out_move_count = 0;
     side_t side = board->side_to_move;
 
-    for (int file = FILE_A; file <= FILE_H; file++)
-        for (int rank = RANK_1; rank <= RANK_8; rank++)
+    for (file_t file = FILE_A; file <= FILE_H; file++)
+        for (rank_t rank = RANK_1; rank <= RANK_8; rank++)
         {
-            square_t square = square_of(file, rank);
+            square_t square = SQUARE_OF(file, rank);
             piece_t piece = board_get(board, square);
             if (!piece)
                 continue;
@@ -95,60 +95,60 @@ void _movegen_generate_pawn_moves(const board_t *board, move_t *out_moves, int *
 
 void _movegen_generate_knight_moves(const board_t *board, move_t *out_moves, int *out_move_count, square_t square)
 {
-    int file = square_file(square);
-    int rank = square_rank(square);
+    file_t file = SQUARE_FILE(square);
+    rank_t rank = SQUARE_RANK(square);
 
-    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file + 1, rank + 2));
-    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file + 2, rank + 1));
-    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file + 2, rank - 1));
-    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file + 1, rank - 2));
-    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file - 1, rank - 2));
-    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file - 2, rank - 1));
-    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file - 2, rank + 1));
-    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file - 1, rank + 2));
+    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file + 1, rank + 2));
+    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file + 2, rank + 1));
+    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file + 2, rank - 1));
+    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file + 1, rank - 2));
+    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file - 1, rank - 2));
+    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file - 2, rank - 1));
+    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file - 2, rank + 1));
+    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file - 1, rank + 2));
 }
 
 void _movegen_generate_bishop_moves(const board_t *board, move_t *out_moves, int *out_move_count, square_t square)
 {
-    int file = square_file(square);
-    int rank = square_rank(square);
+    file_t file = SQUARE_FILE(square);
+    rank_t rank = SQUARE_RANK(square);
 
     for (int distance = MIN_MOVE_DISTANCE; distance <= MAX_MOVE_DISTANCE; distance++)
-        if (ADDED_EMPTY != _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file + distance, rank + distance)))
+        if (ADDED_EMPTY != _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file + distance, rank + distance)))
             break;
 
     for (int distance = MIN_MOVE_DISTANCE; distance <= MAX_MOVE_DISTANCE; distance++)
-        if (ADDED_EMPTY != _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file - distance, rank + distance)))
+        if (ADDED_EMPTY != _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file - distance, rank + distance)))
             break;
 
     for (int distance = MIN_MOVE_DISTANCE; distance <= MAX_MOVE_DISTANCE; distance++)
-        if (ADDED_EMPTY != _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file + distance, rank - distance)))
+        if (ADDED_EMPTY != _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file + distance, rank - distance)))
             break;
 
     for (int distance = MIN_MOVE_DISTANCE; distance <= MAX_MOVE_DISTANCE; distance++)
-        if (ADDED_EMPTY != _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file - distance, rank - distance)))
+        if (ADDED_EMPTY != _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file - distance, rank - distance)))
             break;
 }
 
 void _movegen_generate_rook_moves(const board_t *board, move_t *out_moves, int *out_move_count, square_t square)
 {
-    int file = square_file(square);
-    int rank = square_rank(square);
+    file_t file = SQUARE_FILE(square);
+    rank_t rank = SQUARE_RANK(square);
 
     for (int distance = MIN_MOVE_DISTANCE; distance <= MAX_MOVE_DISTANCE; distance++)
-        if (ADDED_EMPTY != _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file, rank + distance)))
+        if (ADDED_EMPTY != _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file, rank + distance)))
             break;
 
     for (int distance = MIN_MOVE_DISTANCE; distance <= MAX_MOVE_DISTANCE; distance++)
-        if (ADDED_EMPTY != _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file + distance, rank)))
+        if (ADDED_EMPTY != _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file + distance, rank)))
             break;
 
     for (int distance = MIN_MOVE_DISTANCE; distance <= MAX_MOVE_DISTANCE; distance++)
-        if (ADDED_EMPTY != _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file, rank - distance)))
+        if (ADDED_EMPTY != _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file, rank - distance)))
             break;
 
     for (int distance = MIN_MOVE_DISTANCE; distance <= MAX_MOVE_DISTANCE; distance++)
-        if (ADDED_EMPTY != _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file - distance, rank)))
+        if (ADDED_EMPTY != _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file - distance, rank)))
             break;
 }
 
@@ -166,9 +166,9 @@ void _movegen_generate_king_moves(const board_t *board, move_t *out_moves, int *
 
 void _movegen_generate_white_pawn_pushes(const board_t *board, move_t *out_moves, int *out_move_count, square_t square)
 {
-    int file = square_file(square);
-    int rank = square_rank(square);
-    square_t in_front = square_of(file, rank + 1);
+    file_t file = SQUARE_FILE(square);
+    rank_t rank = SQUARE_RANK(square);
+    square_t in_front = SQUARE_OF(file, rank + 1);
 
     if (rank == RANK_2)
     {
@@ -178,7 +178,7 @@ void _movegen_generate_white_pawn_pushes(const board_t *board, move_t *out_moves
             out_moves[*out_move_count] = move_regular(square, in_front);
             (*out_move_count)++;
 
-            square_t two_in_front = square_of(file, rank + 2);
+            square_t two_in_front = SQUARE_OF(file, RANK_4);
             if (board_get(board, two_in_front) == PIECE_NONE)
             {
                 // Push 2
@@ -221,17 +221,17 @@ void _movegen_generate_white_pawn_pushes(const board_t *board, move_t *out_moves
 
 void _movegen_generate_white_pawn_captures(const board_t *board, move_t *out_moves, int *out_move_count, square_t square)
 {
-    int file = square_file(square);
-    int rank = square_rank(square);
+    file_t file = SQUARE_FILE(square);
+    rank_t rank = SQUARE_RANK(square);
     int target_rank = rank + 1;
 
     // Regular captures
-    _movegen_add_if_target_enemy(board, out_moves, out_move_count, square, square_of(file + 1, target_rank));
-    _movegen_add_if_target_enemy(board, out_moves, out_move_count, square, square_of(file - 1, target_rank));
+    _movegen_add_if_target_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file + 1, target_rank));
+    _movegen_add_if_target_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file - 1, target_rank));
 
     // En passant capture
-    int en_passant_rank = square_rank(board->en_passant_square);
-    int en_passant_file = square_file(board->en_passant_square);
+    int en_passant_rank = SQUARE_RANK(board->en_passant_square);
+    int en_passant_file = SQUARE_FILE(board->en_passant_square);
     if (en_passant_rank == target_rank && (en_passant_file == file + 1 || en_passant_file == file - 1))
     {
         out_moves[*out_move_count] = move_regular(square, board->en_passant_square);
@@ -241,9 +241,9 @@ void _movegen_generate_white_pawn_captures(const board_t *board, move_t *out_mov
 
 void _movegen_generate_black_pawn_pushes(const board_t *board, move_t *out_moves, int *out_move_count, square_t square)
 {
-    int file = square_file(square);
-    int rank = square_rank(square);
-    square_t in_front = square_of(file, rank - 1);
+    file_t file = SQUARE_FILE(square);
+    rank_t rank = SQUARE_RANK(square);
+    square_t in_front = SQUARE_OF(file, rank - 1);
 
     if (rank == RANK_7)
     {
@@ -253,7 +253,7 @@ void _movegen_generate_black_pawn_pushes(const board_t *board, move_t *out_moves
             out_moves[*out_move_count] = move_regular(square, in_front);
             (*out_move_count)++;
 
-            square_t two_in_front = square_of(file, rank - 2);
+            square_t two_in_front = SQUARE_OF(file, rank - 2);
             if (board_get(board, two_in_front) == PIECE_NONE)
             {
                 // Push 2
@@ -296,17 +296,17 @@ void _movegen_generate_black_pawn_pushes(const board_t *board, move_t *out_moves
 
 void _movegen_generate_black_pawn_captures(const board_t *board, move_t *out_moves, int *out_move_count, square_t square)
 {
-    int file = square_file(square);
-    int rank = square_rank(square);
+    file_t file = SQUARE_FILE(square);
+    rank_t rank = SQUARE_RANK(square);
     int target_rank = rank - 1;
 
     // Regular captures
-    _movegen_add_if_target_enemy(board, out_moves, out_move_count, square, square_of(file + 1, target_rank));
-    _movegen_add_if_target_enemy(board, out_moves, out_move_count, square, square_of(file - 1, target_rank));
+    _movegen_add_if_target_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file + 1, target_rank));
+    _movegen_add_if_target_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file - 1, target_rank));
 
     // En passant capture
-    int en_passant_rank = square_rank(board->en_passant_square);
-    int en_passant_file = square_file(board->en_passant_square);
+    int en_passant_rank = SQUARE_RANK(board->en_passant_square);
+    int en_passant_file = SQUARE_FILE(board->en_passant_square);
     if (en_passant_rank == target_rank && (en_passant_file == file + 1 || en_passant_file == file - 1))
     {
         out_moves[*out_move_count] = move_regular(square, board->en_passant_square);
@@ -316,29 +316,29 @@ void _movegen_generate_black_pawn_captures(const board_t *board, move_t *out_mov
 
 void _movegen_generate_king_regular(const board_t *board, move_t *out_moves, int *out_move_count, square_t square)
 {
-    int file = square_file(square);
-    int rank = square_rank(square);
+    file_t file = SQUARE_FILE(square);
+    rank_t rank = SQUARE_RANK(square);
 
-    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file, rank + 1));
-    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file, rank - 1));
-    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file + 1, rank));
-    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file - 1, rank));
-    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file + 1, rank + 1));
-    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file - 1, rank + 1));
-    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file + 1, rank - 1));
-    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, square_of(file - 1, rank - 1));
+    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file, rank + 1));
+    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file, rank - 1));
+    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file + 1, rank));
+    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file - 1, rank));
+    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file + 1, rank + 1));
+    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file - 1, rank + 1));
+    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file + 1, rank - 1));
+    _movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file - 1, rank - 1));
 }
 
 void _movegen_generate_king_castling(const board_t *board, move_t *out_moves, int *out_move_count, square_t square)
 {
     if (board->side_to_move == SIDE_WHITE)
     {
-        const square_t WHITE_KINGSIDE_CASTLING_SQUARE = square_of(FILE_G, RANK_1);
-        const square_t WHITE_KINGSIDE_CASTLING_INTERMEDIATE_SQUARE = square_of(FILE_F, RANK_1);
+        const square_t WHITE_KINGSIDE_CASTLING_SQUARE = SQUARE_OF(FILE_G, RANK_1);
+        const square_t WHITE_KINGSIDE_CASTLING_INTERMEDIATE_SQUARE = SQUARE_OF(FILE_F, RANK_1);
 
-        const square_t WHITE_QUEENSIDE_CASTLING_SQUARE = square_of(FILE_C, RANK_1);
-        const square_t WHITE_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE = square_of(FILE_D, RANK_1);
-        const square_t WHITE_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE_2 = square_of(FILE_B, RANK_1);
+        const square_t WHITE_QUEENSIDE_CASTLING_SQUARE = SQUARE_OF(FILE_C, RANK_1);
+        const square_t WHITE_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE = SQUARE_OF(FILE_D, RANK_1);
+        const square_t WHITE_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE_2 = SQUARE_OF(FILE_B, RANK_1);
 
         if (board->white_castling_rights & CASTLING_RIGHTS_KINGSIDE)
         {
@@ -368,12 +368,12 @@ void _movegen_generate_king_castling(const board_t *board, move_t *out_moves, in
 
     else if (board->side_to_move == SIDE_BLACK)
     {
-        const square_t BLACK_KINGSIDE_CASTLING_SQUARE = square_of(FILE_G, RANK_8);
-        const square_t BLACK_KINGSIDE_CASTLING_INTERMEDIATE_SQUARE = square_of(FILE_F, RANK_8);
+        const square_t BLACK_KINGSIDE_CASTLING_SQUARE = SQUARE_OF(FILE_G, RANK_8);
+        const square_t BLACK_KINGSIDE_CASTLING_INTERMEDIATE_SQUARE = SQUARE_OF(FILE_F, RANK_8);
 
-        const square_t BLACK_QUEENSIDE_CASTLING_SQUARE = square_of(FILE_C, RANK_8);
-        const square_t BLACK_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE = square_of(FILE_D, RANK_8);
-        const square_t BLACK_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE_2 = square_of(FILE_B, RANK_8);
+        const square_t BLACK_QUEENSIDE_CASTLING_SQUARE = SQUARE_OF(FILE_C, RANK_8);
+        const square_t BLACK_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE = SQUARE_OF(FILE_D, RANK_8);
+        const square_t BLACK_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE_2 = SQUARE_OF(FILE_B, RANK_8);
 
         if (board->black_castling_rights & CASTLING_RIGHTS_KINGSIDE)
         {
@@ -404,7 +404,7 @@ void _movegen_generate_king_castling(const board_t *board, move_t *out_moves, in
 
 int _movegen_add_if_target_empty_or_enemy(const board_t *board, move_t *out_moves, int *out_move_count, square_t from, square_t to)
 {
-    if (square_valid(to))
+    if (SQUARE_VALID(to))
     {
         piece_t target = board_get(board, to);
         bool is_empty = target == PIECE_NONE;
@@ -422,7 +422,7 @@ int _movegen_add_if_target_empty_or_enemy(const board_t *board, move_t *out_move
 
 void _movegen_add_if_target_enemy(const board_t *board, move_t *out_moves, int *out_move_count, square_t from, square_t to)
 {
-    if (square_valid(to))
+    if (SQUARE_VALID(to))
     {
         piece_t target = board_get(board, to);
         bool is_empty = target == PIECE_NONE;

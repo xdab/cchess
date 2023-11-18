@@ -24,12 +24,12 @@ void check_first_few_moves()
 	if (move_count != 20)
 		test_error("Initial position did not have 20 (pseudo)legal moves");
 
-	board_make_move(&board, move_regular(SQUARE_E2, SQUARE_E4)); // 1. e4
+	board_make_move(&board, move_regular(E2, E4)); // 1. e4
 	movegen_generate(&board, moves, &move_count);
 	if (move_count != 20)
 		test_error("After 1. e4, there were != 20 (pseudo)legal moves for black");	
 
-	board_make_move(&board, move_regular(SQUARE_E7, SQUARE_E5)); // 1. ... e5
+	board_make_move(&board, move_regular(E7, E5)); // 1. ... e5
 	movegen_generate(&board, moves, &move_count);
 	if (move_count != 29)
 		test_error("After 1. e4 e5, there were != 29 (pseudo)legal moves for white");

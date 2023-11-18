@@ -25,7 +25,7 @@ void check_different_boards()
 	board_init(&first);
 	board_init(&second);
 
-	board_make_move(&first, move_regular(SQUARE_E2, SQUARE_E4));
+	board_make_move(&first, move_regular(E2, E4));
 
 	if (first.hash == second.hash)
 		test_error("Two different boards had the same hash");
@@ -39,7 +39,7 @@ void check_move_unmaking()
 
 	zobrist_t initial_hash = board.hash;
 
-	move_t move = move_regular(SQUARE_E2, SQUARE_E4);
+	move_t move = move_regular(E2, E4);
 	board_make_move(&board, move);
 	board_unmake_move(&board);
 
@@ -57,10 +57,10 @@ void check_knights_returning_to_starting_squares()
 
 	zobrist_t initial_hash = board.hash;
 
-	board_make_move(&board, move_regular(SQUARE_G1, SQUARE_F3)); // 1. Nf3
-	board_make_move(&board, move_regular(SQUARE_B8, SQUARE_C6)); // 1. ... Nc6
-	board_make_move(&board, move_regular(SQUARE_F3, SQUARE_G1)); // 2. Ng1
-	board_make_move(&board, move_regular(SQUARE_C6, SQUARE_B8)); // 2. ... Nb8
+	board_make_move(&board, move_regular(G1, F3)); // 1. Nf3
+	board_make_move(&board, move_regular(B8, C6)); // 1. ... Nc6
+	board_make_move(&board, move_regular(F3, G1)); // 2. Ng1
+	board_make_move(&board, move_regular(C6, B8)); // 2. ... Nb8
 
 	zobrist_t final_hash = board.hash;
 

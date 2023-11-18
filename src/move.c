@@ -27,8 +27,8 @@ move_t move_promotion(square_t from, square_t to, piece_t promote_to)
 
 move_t move_uci(const char *uci)
 {
-    square_t from = square_of(FILE(uci[0]), RANK(uci[1]));
-    square_t to = square_of(FILE(uci[2]), RANK(uci[3]));
+    square_t from = SQUARE_OF(FILE(uci[0]), RANK(uci[1]));
+    square_t to = SQUARE_OF(FILE(uci[2]), RANK(uci[3]));
 
     piece_t promote_to = PIECE_NONE;
     switch (uci[4])
@@ -64,10 +64,10 @@ void move_to_uci(move_t move, char *uci)
     square_t to = move_get_to(move);
     piece_t promote_to = move_get_promoted_piece(move);
 
-    uci[0] = FILE_SYMBOL(square_file(from));
-    uci[1] = RANK_SYMBOL(square_rank(from));
-    uci[2] = FILE_SYMBOL(square_file(to));
-    uci[3] = RANK_SYMBOL(square_rank(to));
+    uci[0] = FILE_SYMBOL(SQUARE_FILE(from));
+    uci[1] = RANK_SYMBOL(SQUARE_RANK(from));
+    uci[2] = FILE_SYMBOL(SQUARE_FILE(to));
+    uci[3] = RANK_SYMBOL(SQUARE_RANK(to));
 
     if (promote_to != PIECE_NONE)
     {

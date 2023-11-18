@@ -25,10 +25,10 @@ zobrist_t zobrist_hash(const board_t *board)
 	zobrist_t hash = 0;
 
 	// Specific pieces on specific squares (0x0000 - 0xFFFF)
-	for (int rank = RANK_1; rank <= RANK_8; rank++)
-		for (int file = FILE_A; file <= FILE_H; file++)
+	for (rank_t rank = RANK_1; rank <= RANK_8; rank++)
+		for (file_t file = FILE_A; file <= FILE_H; file++)
 		{
-			square_t square = square_of(file, rank);
+			square_t square = SQUARE_OF(file, rank);
 			int square_int = rank * FILE_COUNT + file; // (0 - 63)
 
 			piece_t piece = board_get(board, square); // (65 - 160)
@@ -54,10 +54,10 @@ zobrist_t zobrist_hash(const board_t *board)
 		hash ^= zobrist_features[BLACK_QUEENSIDE_CASTLING_RIGHTS_FEATURE];
 
 	// En passant square (feature index 6149 - 6212)
-	if (board->en_passant_square != SQUARE_NULL)
+	if (board->en_passant_square != SQUARE_NONE)
 	{
-		int file = square_file(board->en_passant_square);
-		int rank = square_rank(board->en_passant_square);
+		file_t file = SQUARE_FILE(board->en_passant_square);
+		rank_t rank = SQUARE_RANK(board->en_passant_square);
 		int square_int = rank * FILE_COUNT + file; // (0 - 63)
 		int feature_key = EN_PASSANT_SQUARE_FEATURE_START + square_int;
 		hash ^= zobrist_features[feature_key];
@@ -69,7 +69,7 @@ zobrist_t zobrist_hash(const board_t *board)
 zobrist_t zobrist_update_piece(const board_t *board, square_t square, piece_t old_piece, piece_t new_piece)
 {
 	zobrist_t hash = board->hash;
-	int square_int = square_rank(square) * FILE_COUNT + square_file(square); // (0 - 63)
+	int square_int = SQUARE_RANK(square) * FILE_COUNT + SQUARE_FILE(square); // (0 - 63)
 
 	if (old_piece >= WHITE_PAWN)
 	{

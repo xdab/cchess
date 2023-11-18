@@ -62,12 +62,12 @@ void fen_put(board_t *board, const char *fen)
 int _fen_get_piece_placement(const board_t *board, char *fen)
 {
     int i = 0;
-    for (int rank = RANK_8; rank >= RANK_1; rank--)
+    for (rank_t rank = RANK_8; rank >= RANK_1; rank--)
     {
         int empty_count = 0;
-        for (int file = FILE_A; file <= FILE_H; file++)
+        for (file_t file = FILE_A; file <= FILE_H; file++)
         {
-            square_t square = square_of(file, rank);
+            square_t square = SQUARE_OF(file, rank);
             piece_t piece = board_get(board, square);
             if (piece == PIECE_NONE)
                 empty_count++;
@@ -144,14 +144,14 @@ int _fen_get_castling_rights(const board_t *board, char *fen)
 
 int _fen_get_en_passant_square(const board_t *board, char *fen)
 {
-    if (!square_valid(board->en_passant_square))
+    if (!SQUARE_VALID(board->en_passant_square))
     {
         fen[0] = '-';
         return 1;
     }
 
-    fen[0] = FILE_SYMBOL(square_file(board->en_passant_square));
-    fen[1] = RANK_SYMBOL(square_rank(board->en_passant_square));
+    fen[0] = FILE_SYMBOL(SQUARE_FILE(board->en_passant_square));
+    fen[1] = RANK_SYMBOL(SQUARE_RANK(board->en_passant_square));
     return 2;
 }
 
@@ -203,8 +203,8 @@ int _fen_get_fullmove_number(const board_t *board, char *fen)
 
 int _fen_put_piece_placement(board_t *board, const char *fen)
 {
-    int file = FILE_A;
-    int rank = RANK_8;
+    file_t file = FILE_A;
+    rank_t rank = RANK_8;
 
     int i = 0;
     char c;
@@ -222,7 +222,7 @@ int _fen_put_piece_placement(board_t *board, const char *fen)
         {
             int empty_places = c - '0';
             for (int j = 0; j < empty_places; j++)
-                board_set(board, square_of(file++, rank), PIECE_NONE);
+                board_set(board, SQUARE_OF(file++, rank), PIECE_NONE);
         }
 
         else if (isalpha(c))
@@ -243,7 +243,7 @@ int _fen_put_piece_placement(board_t *board, const char *fen)
                 piece = PIECE_KING;
             piece |= (isupper(c)) ? SIDE_WHITE : SIDE_BLACK;
 
-            board_set(board, square_of(file++, rank), piece);
+            board_set(board, SQUARE_OF(file++, rank), piece);
         }
 
         i++;
@@ -287,11 +287,11 @@ int _fen_put_en_passant_square(board_t *board, const char *fen)
 {
     if (fen[0] == '-')
     {
-        board->en_passant_square = SQUARE_NULL;
+        board->en_passant_square = SQUARE_NONE;
         return 1;
     }
 
-    board->en_passant_square = square_of(FILE(fen[0]), RANK(fen[1]));
+    board->en_passant_square = SQUARE_OF(FILE(fen[0]), RANK(fen[1]));
     return 2;
 }
 

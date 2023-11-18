@@ -27,42 +27,42 @@
 
 void board_init(board_t *board)
 {
-    for (int file = FILE_A; file <= FILE_H; file++)
-        memset(board->pieces[file], PIECE_NONE, RANK_COUNT);
+    memset(board->squares, PIECE_NONE, SQUARE_COUNT);
     board->hash = 0;
     
-    board_set(board, square_of(FILE_A, RANK_1), PIECE_ROOK | SIDE_WHITE);
-    board_set(board, square_of(FILE_B, RANK_1), PIECE_KNIGHT | SIDE_WHITE);
-    board_set(board, square_of(FILE_C, RANK_1), PIECE_BISHOP | SIDE_WHITE);
-    board_set(board, square_of(FILE_D, RANK_1), PIECE_QUEEN | SIDE_WHITE);
-    board_set(board, square_of(FILE_E, RANK_1), PIECE_KING | SIDE_WHITE);
-    board_set(board, square_of(FILE_F, RANK_1), PIECE_BISHOP | SIDE_WHITE);
-    board_set(board, square_of(FILE_G, RANK_1), PIECE_KNIGHT | SIDE_WHITE);
-    board_set(board, square_of(FILE_H, RANK_1), PIECE_ROOK | SIDE_WHITE);
+    board_set(board, A1, PIECE_ROOK | SIDE_WHITE);
+    board_set(board, B1, PIECE_KNIGHT | SIDE_WHITE);
+    board_set(board, C1, PIECE_BISHOP | SIDE_WHITE);
+    board_set(board, D1, PIECE_QUEEN | SIDE_WHITE);
+    board_set(board, E1, PIECE_KING | SIDE_WHITE);
+    board_set(board, F1, PIECE_BISHOP | SIDE_WHITE);
+    board_set(board, G1, PIECE_KNIGHT | SIDE_WHITE);
+    board_set(board, H1, PIECE_ROOK | SIDE_WHITE);
 
-    for (int file = FILE_A; file <= FILE_H; file++)
-        board_set(board, square_of(file, RANK_2), PIECE_PAWN | SIDE_WHITE);
+    for (file_t file = FILE_A; file <= FILE_H; file++)
+        board_set(board, SQUARE_OF(file, RANK_2), PIECE_PAWN | SIDE_WHITE);
 
-    board_set(board, square_of(FILE_A, RANK_8), PIECE_ROOK | SIDE_BLACK);
-    board_set(board, square_of(FILE_B, RANK_8), PIECE_KNIGHT | SIDE_BLACK);
-    board_set(board, square_of(FILE_C, RANK_8), PIECE_BISHOP | SIDE_BLACK);
-    board_set(board, square_of(FILE_D, RANK_8), PIECE_QUEEN | SIDE_BLACK);
-    board_set(board, square_of(FILE_E, RANK_8), PIECE_KING | SIDE_BLACK);
-    board_set(board, square_of(FILE_F, RANK_8), PIECE_BISHOP | SIDE_BLACK);
-    board_set(board, square_of(FILE_G, RANK_8), PIECE_KNIGHT | SIDE_BLACK);
-    board_set(board, square_of(FILE_H, RANK_8), PIECE_ROOK | SIDE_BLACK);
+    board_set(board, A8, PIECE_ROOK | SIDE_BLACK);
+    board_set(board, B8, PIECE_KNIGHT | SIDE_BLACK);
+    board_set(board, C8, PIECE_BISHOP | SIDE_BLACK);
+    board_set(board, D8, PIECE_QUEEN | SIDE_BLACK);
+    board_set(board, E8, PIECE_KING | SIDE_BLACK);
+    board_set(board, F8, PIECE_BISHOP | SIDE_BLACK);
+    board_set(board, G8, PIECE_KNIGHT | SIDE_BLACK);
+    board_set(board, H8, PIECE_ROOK | SIDE_BLACK);
 
-    for (int file = FILE_A; file <= FILE_H; file++)
-        board_set(board, square_of(file, RANK_7), PIECE_PAWN | SIDE_BLACK);
+    for (file_t file = FILE_A; file <= FILE_H; file++)
+        board_set(board, SQUARE_OF(file, RANK_7), PIECE_PAWN | SIDE_BLACK);
 
-    for (int file = FILE_A; file <= FILE_H; file++)
-        for (int rank = RANK_3; rank <= RANK_6; rank++)
-            board_set(board, square_of(file, rank), PIECE_NONE);
+    for (file_t file = FILE_A; file <= FILE_H; file++)
+        for (rank_t rank = RANK_3; rank <= RANK_6; rank++)
+            board_set(board, SQUARE_OF(file, rank), PIECE_NONE);
 
     board->side_to_move = SIDE_WHITE;
     board->white_castling_rights = CASTLING_RIGHTS_KINGSIDE | CASTLING_RIGHTS_QUEENSIDE;
     board->black_castling_rights = CASTLING_RIGHTS_KINGSIDE | CASTLING_RIGHTS_QUEENSIDE;
-    board->en_passant_square = SQUARE_NULL;
+    board->en_passant_square = SQUARE_NONE;
+
     board->halfmove_clock = 0;
     board->fullmove_number = 1;
     board->history_size = 0;
@@ -70,9 +70,7 @@ void board_init(board_t *board)
 
 void board_clone(const board_t *board, board_t *clone)
 {
-    for (int file = FILE_A; file <= FILE_H; file++)
-        for (int rank = RANK_1; rank <= RANK_8; rank++)
-            board_set(clone, square_of(file, rank), board_get(board, square_of(file, rank)));
+    memcpy(clone->squares, board->squares, SQUARE_COUNT);
 
     clone->side_to_move = board->side_to_move;
     clone->white_castling_rights = board->white_castling_rights;
@@ -88,16 +86,16 @@ void board_print(board_t *board, FILE *stream)
 {
     PUT_UPPER_EDGE(stream);
 
-    for (int rank = RANK_8; rank >= RANK_1; rank--)
+    for (rank_t rank = RANK_8; rank >= RANK_1; rank--)
     {
         fputc(ONE + rank, stream);
         fputc(SPACE, stream);
         PUT_VERTICAL(stream);
         fputc(SPACE, stream);
 
-        for (int file = FILE_A; file <= FILE_H; file++)
+        for (file_t file = FILE_A; file <= FILE_H; file++)
         {
-            piece_t piece = board_get(board, square_of(file, rank));
+            piece_t piece = board_get(board, SQUARE_OF(file, rank));
 
 #ifndef CCHESS_UNICODE
             char piece_char = SYMBOL_NONE;
@@ -163,14 +161,14 @@ void board_print(board_t *board, FILE *stream)
 
 piece_t board_get(const board_t *board, square_t square)
 {
-    return board->pieces[square_file(square)][square_rank(square)];
+    return board->squares[square];
 }
 
 void board_set(board_t *board, square_t square, piece_t piece)
 {
     piece_t old_piece = board_get(board, square);
     board->hash = zobrist_update_piece(board, square, old_piece, piece);
-    board->pieces[square_file(square)][square_rank(square)] = piece;
+    board->squares[square] = piece;
 }
 
 void board_make_move(board_t *board, move_t move)
