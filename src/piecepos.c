@@ -161,6 +161,119 @@ void piecepos_update(piecepos_t *white, piecepos_t *black, square_t from, square
 	}
 }
 
+void piecepos_from_squares(piecepos_t *piece_positions, const piece_t squares[SQUARE_COUNT], side_t side)
+{
+	memset(piece_positions, SQUARE_NONE, sizeof(piecepos_t));
+	piece_positions->has_pawns = false;
+	piece_positions->has_promoted_pieces = false;
+	piece_positions->has_promoted_queens = false;
+	piece_positions->has_promoted_rooks = false;
+	piece_positions->has_promoted_bishops = false;
+	piece_positions->has_promoted_knights = false;
+
+	for (square_t sq = SQUARE_MIN; sq <= SQUARE_MAX; sq++)
+	{
+		piece_t piece = squares[sq];
+
+		if (piece == PIECE_NONE)
+			continue; // No piece on this square
+
+		if (!(piece & side))
+			continue; // Not the side we're looking for
+
+		if (piece & KING)
+			piece_positions->king = sq;
+
+		else if (piece & PAWN)
+		{
+			piece_positions->has_pawns = true;
+			for (int i = 0; i < 8; i++)
+				if (piece_positions->pawns[i] == SQUARE_NONE)
+				{
+					piece_positions->pawns[i] = sq;
+					break;
+				}
+		}
+
+		else if (piece & KNIGHT)
+		{
+			if (piece_positions->kings_knight == SQUARE_NONE)
+				piece_positions->kings_knight = sq;
+			else if (piece_positions->queens_knight == SQUARE_NONE)
+				piece_positions->queens_knight = sq;
+			else
+			{
+				piece_positions->has_promoted_pieces = true;
+				piece_positions->has_promoted_knights = true;
+				for (int i = 0; i < 8; i++)
+					if (piece_positions->promoted_knights[i] == SQUARE_NONE)
+					{
+						piece_positions->promoted_knights[i] = sq;
+						break;
+					}
+			}
+		}
+
+		else if (piece & BISHOP)
+		{
+			bool is_dark_square = SQUARE_DARK(sq);
+			bool is_light_square = SQUARE_LIGHT(sq);
+
+			if (is_light_square && (piece_positions->kings_bishop == SQUARE_NONE))
+				piece_positions->kings_bishop = sq;
+			else if (is_dark_square && (piece_positions->queens_bishop == SQUARE_NONE))
+				piece_positions->queens_bishop = sq;
+			else
+			{
+				piece_positions->has_promoted_pieces = true;
+				piece_positions->has_promoted_bishops = true;
+				for (int i = 0; i < 8; i++)
+					if (piece_positions->promoted_bishops[i] == SQUARE_NONE)
+					{
+						piece_positions->promoted_bishops[i] = sq;
+						break;
+					}
+			}
+		}
+
+		else if (piece & ROOK)
+		{
+			if (piece_positions->kings_rook == SQUARE_NONE)
+				piece_positions->kings_rook = sq;
+			else if (piece_positions->queens_rook == SQUARE_NONE)
+				piece_positions->queens_rook = sq;
+			else
+			{
+				piece_positions->has_promoted_pieces = true;
+				piece_positions->has_promoted_rooks = true;
+				for (int i = 0; i < 8; i++)
+					if (piece_positions->promoted_rooks[i] == SQUARE_NONE)
+					{
+						piece_positions->promoted_rooks[i] = sq;
+						break;
+					}
+			}
+		}
+
+		else if (piece & QUEEN)
+		{
+			if (piece_positions->queen == SQUARE_NONE)
+				piece_positions->queen = sq;
+			else
+			{
+				piece_positions->has_promoted_pieces = true;
+				piece_positions->has_promoted_queens = true;
+				for (int i = 0; i < 8; i++)
+					if (piece_positions->promoted_queens[i] == SQUARE_NONE)
+					{
+						piece_positions->promoted_queens[i] = sq;
+						break;
+					}
+			}
+		}
+	}
+}
+
 void _piecepos_update_current(piecepos_t *current, square_t from, square_t target, piece_t moved_piece, piece_t promotion_piece)
 {
 	if (moved_piece & PAWN)

@@ -40,8 +40,13 @@ int _fen_put_fullmove_number(board_t *board, const char *fen);
 
 void fen_put(board_t *board, const char *fen)
 {
+    board_init(board);
+
     int i = _fen_put_piece_placement(board, fen);
     i++;
+
+    piecepos_from_squares(&board->white_piece_positions, board->squares, WHITE);
+    piecepos_from_squares(&board->black_piece_positions, board->squares, BLACK);
 
     i += _fen_put_side_to_move(board, fen + i);
     i++;

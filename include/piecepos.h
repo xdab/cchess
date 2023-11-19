@@ -3,6 +3,7 @@
 
 #include "square.h"
 #include "piece.h"
+#include "side.h"
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -64,5 +65,14 @@ void piecepos_print(const piecepos_t *piece_positions, FILE *stream);
  * @param target_piece The piece that was captured.
  */
 void piecepos_update(piecepos_t *white, piecepos_t *black, square_t from, square_t target, piece_t moved_piece, piece_t promotion_piece, piece_t target_piece);
+
+/**
+ * Sets likely piece positions based on squares with pieces.
+ *
+ * @param piece_positions The piece positions to set.
+ * @param squares The squares with pieces on the board.
+ * @param side The side to set the piece positions for.
+ */
+void piecepos_from_squares(piecepos_t *piece_positions, const piece_t squares[SQUARE_COUNT], side_t side);
 
 #endif

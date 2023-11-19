@@ -1,6 +1,8 @@
 #include "test_util.h"
 #include "fen.h"
 
+#include <string.h>
+
 void check_put();
 void check_get();
 void check_put_get();
