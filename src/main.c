@@ -18,12 +18,8 @@
 
 void nice_print(const board_t *board)
 {
-    printf("\n\n\n---------Board---------\n");
     board_print(board, stderr);
-    printf("---------White---------\n");
-    piecepos_print(&board->white_piece_positions, stderr);
-    printf("---------Black---------\n");
-    piecepos_print(&board->black_piece_positions, stderr);
+    printf("------------------------\n\n");
 }
 
 int main(int argc, char *argv[])
@@ -45,10 +41,6 @@ int main(int argc, char *argv[])
 
     board_make_move(&board, move_regular(E2, E4));
     board_make_move(&board, move_regular(E7, E5));
-    board_make_move(&board, move_regular(G1, F3));
-    board_make_move(&board, move_regular(B8, C6));
-    board_make_move(&board, move_regular(F1, B5));
-    board_make_move(&board, move_regular(C8, G4));
 
     score_t static_score = 0;
     while ((static_score > -10000) && (static_score < 10000))
@@ -58,7 +50,7 @@ int main(int argc, char *argv[])
 
         score_t search_score;
         move_t best_move;
-        const int depth = 6;
+        const int depth = 5;
         board_clone(&board, &work_board);
         search_score = search(&work_board, depth, &best_move);
         printf("Score: %+d cp\n", search_score);

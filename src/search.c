@@ -1,51 +1,87 @@
 #include "search.h"
+#include "move.h"
 #include "movegen.h"
 #include "ttable.h"
 
-score_t alpha_beta(board_t *board, int depth, score_t alpha, score_t beta, move_t *best_move);
+score_t alpha_beta(board_t *board, int depth, score_t alpha, score_t beta);
+score_t quiescence_search(board_t *board, score_t alpha, score_t beta);
 
 score_t search(board_t *board, int depth, move_t *best_move)
 {
-	int multiplier = (depth % 2 == 0) ? -1 : 1;
-	return multiplier * alpha_beta(board, depth, -VALUE_CHECKMATE, VALUE_CHECKMATE, best_move);
-}
+	move_t moves[MAX_MOVES];
+	int move_count;
+	movegen_generate(board, moves, &move_count);
 
-score_t alpha_beta(board_t *board, int depth, score_t alpha, score_t beta, move_t *best_move)
-{
-	// Retrieve position from transposition table
-	ttable_entry_t entry;
-	ttable_retrieve(board->hash, &entry);
-	if (board->hash == entry.hash && depth <= entry.depth)
+	score_t best_score = -VALUE_CHECKMATE;
+	for (int i = 0; i < move_count; i++)
 	{
-		switch (entry.type)
-		{
-		case TTABLE_ENTRY_EXACT:
-			*best_move = entry.best_move;
-			return entry.score;
-		case TTABLE_ENTRY_ALPHA:
-			alpha = (entry.score > alpha) ? entry.score : alpha;
-			break;
-		case TTABLE_ENTRY_BETA:
-			beta = (entry.score < beta) ? entry.score : beta;
-			break;
-		}
+		move_t move = moves[i];
 
-		if (alpha >= beta)
+		board_make_move(board, move);
+		score_t score = -alpha_beta(board, depth - 1, -VALUE_CHECKMATE, VALUE_CHECKMATE);
+		board_unmake_move(board);
+
+		if (score > best_score)
 		{
-			*best_move = entry.best_move;
-			return entry.score;
+			best_score = score;
+			if (best_move != NULL)
+				*best_move = move;
 		}
 	}
 
-	score_t static_eval = evaluate_relative(board);
+	return best_score;
+}
 
-	if (depth == 0)
-		return static_eval;
+score_t alpha_beta(board_t *board, int depth, score_t alpha, score_t beta)
+{
+	if (depth <= 0)
+		return quiescence_search(board, alpha, beta);
 
-	if ((static_eval >= VALUE_CHECKMATE) || (static_eval <= -VALUE_CHECKMATE))
-		return static_eval;
+	move_t moves[MAX_MOVES];
+	int move_count;
+	movegen_generate(board, moves, &move_count);
 
-	int alpha_orig = alpha;
+	score_t best_score = -VALUE_CHECKMATE;
+
+	for (int i = 0; i < move_count; i++)
+	{
+		move_t move = moves[i];
+
+		// Check for checkmate
+		piece_t captured_piece = board_get(board, move_get_to(move));
+		if (captured_piece & KING)
+			return VALUE_CHECKMATE;
+
+		// Search deeper
+		board_make_move(board, move);
+		score_t score = -alpha_beta(board, depth - 1, -beta, -alpha);
+		board_unmake_move(board);
+
+		// Update best score if needed
+		if (score > best_score)
+			best_score = score;
+
+		// Alpha-beta pruning
+		if (best_score >= beta)
+			break;
+
+		// Search window tightening
+		if (best_score > alpha)
+			alpha = best_score;
+	}
+
+	return best_score;
+}
+
+score_t quiescence_search(board_t *board, score_t alpha, score_t beta)
+{
+	score_t stand_pat = evaluate_relative(board);
+
+	if (stand_pat >= beta)
+		return beta;
+
+	if (stand_pat > alpha)
+		alpha = stand_pat;
 
 	move_t moves[MAX_MOVES];
 	int move_count;
@@ -54,42 +90,25 @@ score_t alpha_beta(board_t *board, int depth, score_t alpha, score_t beta, move_
 	for (int i = 0; i < move_count; i++)
 	{
 		move_t move = moves[i];
-		zobrist_t initial_hash = board->hash;
+		piece_t captured_piece = board_get(board, move_get_to(move));
+
+		bool is_capture = captured_piece != PIECE_NONE;
+		if (!is_capture)
+			continue;
+
+		if (captured_piece & KING)
+			return VALUE_CHECKMATE;
+
 		board_make_move(board, move);
-		move_t best_move_child;
-		score_t score = -alpha_beta(board, depth - 1, -beta, -alpha, &best_move_child);
+		score_t score = -quiescence_search(board, -beta, -alpha);
 		board_unmake_move(board);
 
-		if (board->hash != initial_hash)
-		{
-			char move_uci[6];
-			move_to_uci(move, move_uci);
-			fprintf(stderr, "Hash mismatch after move %s\n", move_uci);
-		}
-
 		if (score >= beta)
-		{
 			return beta;
-		}
 
 		if (score > alpha)
-		{
-			*best_move = move;
 			alpha = score;
-		}
 	}
-
-	entry.hash = board->hash;
-	entry.depth = depth;
-	entry.score = alpha;
-	entry.best_move = *best_move;
-	if (alpha <= alpha_orig)
-		entry.type = TTABLE_ENTRY_BETA;
-	else if (alpha >= beta)
-		entry.type = TTABLE_ENTRY_ALPHA;
-	else
-		entry.type = TTABLE_ENTRY_EXACT;
-	ttable_store(&entry);
 
 	return alpha;
 }

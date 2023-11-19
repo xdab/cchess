@@ -233,21 +233,6 @@ void board_make_move(board_t *board, move_t move)
     // Update piece positions
     piecepos_update(&board->white_piece_positions, &board->black_piece_positions, from, to, moved_piece, promoted_piece, captured_piece);
 
-    // Store event in history
-    if (board->history_size == BOARD_HISTORY_SIZE)
-    {
-        for (int i = 0; i < BOARD_HISTORY_SIZE - 1; i++)
-            board->history[i] = board->history[i + 1];
-        board->history_size--;
-    }
-    board->history[board->history_size].move = move;
-    board->history[board->history_size].captured_piece = captured_piece;
-    board->history[board->history_size].white_castling_rights = board->white_castling_rights;
-    board->history[board->history_size].black_castling_rights = board->black_castling_rights;
-    board->history[board->history_size].en_passant_square = board->en_passant_square;
-    board->history[board->history_size].halfmove_clock = board->halfmove_clock;
-    board->history_size++;
-
     // Castling
     if (moved_piece & KING)
     {
@@ -307,6 +292,21 @@ void board_make_move(board_t *board, move_t move)
     board_set(board, from, PIECE_NONE);
     board_set(board, to, (promoted_piece != PIECE_NONE) ? (promoted_piece | (moved_piece & SIDE_MASK)) : moved_piece);
 
+    // Store event in history
+    if (board->history_size == BOARD_HISTORY_SIZE)
+    {
+        for (int i = 0; i < BOARD_HISTORY_SIZE - 1; i++)
+            board->history[i] = board->history[i + 1];
+        board->history_size--;
+    }
+    board->history[board->history_size].move = move;
+    board->history[board->history_size].captured_piece = captured_piece;
+    board->history[board->history_size].white_castling_rights = board->white_castling_rights;
+    board->history[board->history_size].black_castling_rights = board->black_castling_rights;
+    board->history[board->history_size].en_passant_square = board->en_passant_square;
+    board->history[board->history_size].halfmove_clock = board->halfmove_clock;
+    board->history_size++;
+
     board->side_to_move = (moved_piece & WHITE) ? BLACK : WHITE;
     board->halfmove_clock = ((captured_piece != PIECE_NONE) || (moved_piece & PAWN)) ? 0 : (board->halfmove_clock + 1);
     board->fullmove_number += (board->side_to_move == BLACK);
@@ -329,9 +329,6 @@ void board_unmake_move(board_t *board)
     piece_t promoted_piece = move_get_promoted_piece(move);
     if (promoted_piece != PIECE_NONE)
         moved_piece = PAWN | (moved_piece & SIDE_MASK);
-
-    board_set(board, from, moved_piece);
-    board_set(board, to, captured_piece);
 
     // Castling
     if (moved_piece & KING)
@@ -369,6 +366,9 @@ void board_unmake_move(board_t *board)
             }
         }
     }
+
+    board_set(board, from, moved_piece);
+    board_set(board, to, captured_piece);
 
     board->side_to_move = (moved_piece & WHITE) ? WHITE : BLACK;
     board->white_castling_rights = board->history[board->history_size].white_castling_rights;
