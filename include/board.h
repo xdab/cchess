@@ -48,6 +48,8 @@ typedef struct board
 
 /**
  * Initializes the board to the starting position.
+ * 
+ * @note This function must be called before any other board functions.
  *
  * @param board The board to initialize.
  */
