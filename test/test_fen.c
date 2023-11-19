@@ -1,5 +1,5 @@
 #include "test_util.h"
-#include "fen.h"
+#include "board_fen.h"
 
 #include <string.h>
 
@@ -24,7 +24,7 @@ void check_put()
 
 	board_init(&board);
 	
-	fen_put(&board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+	board_set_fen(&board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
 	if (board_get(&board, A1) != (ROOK | WHITE))
 		test_error("A1 does not contain a white rook");
@@ -80,7 +80,7 @@ void check_get()
 	
 	board_init(&board);
 
-	fen_get(&board, fen);
+	board_get_fen(&board, fen);
 	if (strcmp(fen, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"))
 		test_error("FEN of starting position is incorrect");
 }
@@ -93,8 +93,8 @@ void check_put_get()
 	board_init(&board);
 
 	const char *fen1 = "rnb1kbnr/ppp2ppp/8/q3p3/8/2NP1N2/PPP2PPP/R1BQKB1R b KQkq - 0 5";
-	fen_put(&board, fen1);
-	fen_get(&board, fen);
+	board_set_fen(&board, fen1);
+	board_get_fen(&board, fen);
 	if (strcmp(fen, fen1))
-		test_error("After fen_put(..., fen1), fen_get did not return the same FEN");
+		test_error("After board_set_fen(..., fen1), board_get_fen did not return the same FEN");
 }

@@ -7,9 +7,9 @@
 
 #ifdef CCHESS_DEBUG
 #include "board.h"
+#include "board_fen.h"
 #include "move.h"
 #include "movegen.h"
-#include "fen.h"
 #include "search.h"
 #include "random.h"
 #include "zobrist.h"

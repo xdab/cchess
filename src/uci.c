@@ -1,7 +1,7 @@
 #include "uci.h"
 #include "board.h"
+#include "board_fen.h"
 #include "move.h"
-#include "fen.h"
 #include "eval.h"
 
 #include <stdio.h>
@@ -105,7 +105,7 @@ int uci_loop()
             if (strncmp(pos, COMMAND_POSITION_FEN, strlen(COMMAND_POSITION_FEN)) == 0)
             {
                 pos += strlen(COMMAND_POSITION_FEN) + 1;
-                fen_put(&board, pos);
+                board_set_fen(&board, pos);
             }
             else if (strncmp(pos, COMMAND_POSITION_STARTPOS, strlen(COMMAND_POSITION_STARTPOS)) == 0)
             {

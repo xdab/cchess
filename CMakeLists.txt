@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.13)
 project(cchess VERSION 0.0.1 LANGUAGES C)
 
-include_directories(include)
+include_directories(include include/board include/movegen)
 
-file(GLOB headers include/*.h)
-file(GLOB sources src/*.c)
+file(GLOB headers include/*.h include/board/*.h include/movegen/*h)
+file(GLOB sources src/*.c src/board/*.c src/movegen/*.c)
 list(FILTER sources EXCLUDE REGEX ".*main\\.c$")
 add_executable(cchess src/main.c ${sources} ${headers})
 set(CMAKE_C_FLAGS_DEBUG "-g -DDEBUG")

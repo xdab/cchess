@@ -1,6 +1,6 @@
 #include "test_util.h"
 #include "board.h"
-#include "fen.h"
+#include "board_fen.h"
 #include "search.h"
 
 void check_free_queen_1();
@@ -17,7 +17,7 @@ int main(int argc, char const *argv[])
 void check_free_queen_1()
 {
 	board_t board;
-	fen_put(&board, "rnb1kbnr/ppp1p1pp/5p2/3q4/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 0 4");
+	board_set_fen(&board, "rnb1kbnr/ppp1p1pp/5p2/3q4/8/2N5/PPPP1PPP/R1BQKBNR w KQkq - 0 4");
 
 	board_print(&board, stderr);
 
