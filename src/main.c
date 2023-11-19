@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 
     zobrist_init();
 
-    const int transposition_table_size = 1 << 18;
+    const int transposition_table_size = 1 << 16;
     ttable_init(transposition_table_size);
 
     board_init(&board);
@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
     board_make_move(&board, move_regular(E7, E5));
     board_make_move(&board, move_regular(D1, H5));
     board_make_move(&board, move_regular(B8, C6));
+    board_make_move(&board, move_regular(F1, C4));
 
     score_t static_score = 0;
     while ((static_score > -10000) && (static_score < 10000))
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
 
         score_t search_score;
         move_t best_move;
-        const int depth = 4;
+        const int depth = 3;
         board_clone(&board, &work_board);
         search_score = search(&work_board, depth, &best_move);
         printf("Score: %+d cp\n", search_score);

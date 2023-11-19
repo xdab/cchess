@@ -3,7 +3,6 @@
 #include "move.h"
 #include "movegen.h"
 #include "ttable.h"
-
 #include <stdbool.h>
 
 score_t alpha_beta(board_t *board, int depth, score_t alpha, score_t beta);
@@ -40,11 +39,20 @@ score_t alpha_beta(board_t *board, int depth, score_t alpha, score_t beta)
 	if (depth <= 0)
 		return quiescence_search(board, alpha, beta);
 
+	// ttable_entry_t retrieved_entry;
+	// ttable_retrieve(board->hash, &retrieved_entry);
+	// if ((retrieved_entry.hash == board->hash) && (retrieved_entry.depth >= depth))
+	// {
+	// 	if (retrieved_entry.type == TTABLE_ENTRY_EXACT)
+	// 		return retrieved_entry.score;
+	// }
+
 	move_t moves[MAX_MOVES];
 	int move_count;
 	movegen_generate(board, moves, &move_count);
 
 	score_t best_score = -VALUE_CHECKMATE;
+	move_t best_move = MOVE_NULL;
 
 	for (int i = 0; i < move_count; i++)
 	{
@@ -62,7 +70,10 @@ score_t alpha_beta(board_t *board, int depth, score_t alpha, score_t beta)
 
 		// Update best score if needed
 		if (score > best_score)
+		{
 			best_score = score;
+			best_move = move;
+		}
 
 		// Alpha-beta pruning
 		if (best_score >= beta)
@@ -72,6 +83,14 @@ score_t alpha_beta(board_t *board, int depth, score_t alpha, score_t beta)
 		if (best_score > alpha)
 			alpha = best_score;
 	}
+
+	// ttable_entry_t entry_to_store;
+	// entry_to_store.hash = board->hash;
+	// entry_to_store.type = TTABLE_ENTRY_EXACT;
+	// entry_to_store.best_move = best_move;
+	// entry_to_store.score = best_score;
+	// entry_to_store.depth = depth;
+	// ttable_store(&entry_to_store);
 
 	return best_score;
 }
@@ -90,7 +109,6 @@ score_t quiescence_search(board_t *board, score_t alpha, score_t beta)
 	int move_count;
 	movegen_generate(board, moves, &move_count);
 
-	bool no_captures = true;
 	for (int i = 0; i < move_count; i++)
 	{
 		move_t move = moves[i];
@@ -98,10 +116,7 @@ score_t quiescence_search(board_t *board, score_t alpha, score_t beta)
 
 		bool is_capture = captured_piece != PIECE_NONE;
 		if (!is_capture)
-		{
-			no_captures = false;
 			continue;
-		}
 
 		if (captured_piece & KING)
 			return VALUE_CHECKMATE;
@@ -116,9 +131,6 @@ score_t quiescence_search(board_t *board, score_t alpha, score_t beta)
 		if (score > alpha)
 			alpha = score;
 	}
-
-	if (no_captures)
-		return stand_pat;
 
 	return alpha;
 }
