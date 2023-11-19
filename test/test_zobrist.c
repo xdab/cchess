@@ -1,5 +1,6 @@
 #include "test_util.h"
 #include "board.h"
+#include "board_move.h"
 #include "zobrist.h"
 
 void check_identical_boards()

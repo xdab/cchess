@@ -8,12 +8,13 @@
 #ifdef CCHESS_DEBUG
 #include "board.h"
 #include "board_fen.h"
+#include "board_move.h"
 #include "move.h"
 #include "movegen.h"
-#include "search.h"
 #include "random.h"
 #include "zobrist.h"
 #include "ttable.h"
+#include "search.h"
 #endif
 
 void nice_print(const board_t *board)
@@ -33,7 +34,9 @@ int main(int argc, char *argv[])
 #else
     board_t board;
     board_t work_board;
+
     zobrist_init();
+
     const int transposition_table_size = 1 << 18;
     ttable_init(transposition_table_size);
 
@@ -41,6 +44,8 @@ int main(int argc, char *argv[])
 
     board_make_move(&board, move_regular(E2, E4));
     board_make_move(&board, move_regular(E7, E5));
+    board_make_move(&board, move_regular(D1, H5));
+    board_make_move(&board, move_regular(B8, C6));
 
     score_t static_score = 0;
     while ((static_score > -10000) && (static_score < 10000))
@@ -50,7 +55,7 @@ int main(int argc, char *argv[])
 
         score_t search_score;
         move_t best_move;
-        const int depth = 5;
+        const int depth = 4;
         board_clone(&board, &work_board);
         search_score = search(&work_board, depth, &best_move);
         printf("Score: %+d cp\n", search_score);

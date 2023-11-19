@@ -1,11 +1,12 @@
 #include "test_util.h"
 #include "board.h"
+#include "board_move.h"
 
 void check_regular_move(board_t *board);
 void check_capture(board_t *board);
 void check_promotion(board_t *board);
-void check_en_passant(board_t *board);
-void check_castling(board_t *board);
+// void check_en_passant(board_t *board);
+// void check_castling(board_t *board);
 
 int main(int argc, char const *argv[])
 {
@@ -67,16 +68,16 @@ void check_capture(board_t *board)
 void check_promotion(board_t *board)
 {
 	board_init(board);
-	board_make_move(board, move_regular(C2, C4));				   // 1. c4
-	board_make_move(board, move_regular(C7, C5));				   // 1. ... c5
-	board_make_move(board, move_regular(D2, D4));				   // 2. d4
-	board_make_move(board, move_regular(C5, D4));				   // 2. ... cxd4
-	board_make_move(board, move_regular(C4, C5));				   // 3. c5
-	board_make_move(board, move_regular(D7, D6));				   // 3. ... d6
-	board_make_move(board, move_regular(C5, C6));				   // 4. c6
-	board_make_move(board, move_regular(C8, D7));				   // 4. ... Bd7
-	board_make_move(board, move_regular(C6, C7));				   // 5. c7
-	board_make_move(board, move_regular(D7, E6));				   // 5. ... Be6
+	board_make_move(board, move_regular(C2, C4));		   // 1. c4
+	board_make_move(board, move_regular(C7, C5));		   // 1. ... c5
+	board_make_move(board, move_regular(D2, D4));		   // 2. d4
+	board_make_move(board, move_regular(C5, D4));		   // 2. ... cxd4
+	board_make_move(board, move_regular(C4, C5));		   // 3. c5
+	board_make_move(board, move_regular(D7, D6));		   // 3. ... d6
+	board_make_move(board, move_regular(C5, C6));		   // 4. c6
+	board_make_move(board, move_regular(C8, D7));		   // 4. ... Bd7
+	board_make_move(board, move_regular(C6, C7));		   // 5. c7
+	board_make_move(board, move_regular(D7, E6));		   // 5. ... Be6
 	board_make_move(board, move_promotion(C7, C8, QUEEN)); // 6. c8=Q
 	if (board_get(board, C8) != (QUEEN | WHITE))
 		test_error("After (1. c4 c5 2. d4 cxd4 3. c5 d6 4. c6 Bd7 5. c7 Be6 6. c8=Q), c8 did not contain a white queen");
@@ -84,7 +85,7 @@ void check_promotion(board_t *board)
 		test_error("After (1. c4 c5 2. d4 cxd4 3. c5 d6 4. c6 Bd7 5. c7 Be6 6. c8=Q), c7 was not empty");
 	if (board->side_to_move != BLACK)
 		test_error("After (1. c4 c5 2. d4 cxd4 3. c5 d6 4. c6 Bd7 5. c7 Be6 6. c8=Q), side to move was not black");
-	
+
 	board_unmake_move(board);
 	if (board_get(board, C7) != (PAWN | WHITE))
 		test_error("After unmaking (6. c8=Q), white queen from c8 did not return to c7 as a pawn");

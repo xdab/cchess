@@ -1,23 +1,25 @@
 #include "movegen_king.h"
 #include "movegen_common.h"
 
-const square_t WHITE_KINGSIDE_CASTLING_SQUARE = G1;
-const square_t WHITE_KINGSIDE_CASTLING_INTERMEDIATE_SQUARE = F1;
-const square_t WHITE_KINGSIDE_CASTLING_INITIAL_ROOK_SQUARE = H1;
+#define MG_COND_KING (MG_EMPTY | MG_ENEMY)
 
-const square_t WHITE_QUEENSIDE_CASTLING_SQUARE = C1;
-const square_t WHITE_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE = B1;
-const square_t WHITE_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE_2 = D1;
-const square_t WHITE_QUEENSIDE_CASTLING_INITIAL_ROOK_SQUARE = A1;
+#define WHITE_KINGSIDE_CASTLING_SQUARE G1
+#define WHITE_KINGSIDE_CASTLING_INTERMEDIATE_SQUARE F1
+#define WHITE_KINGSIDE_CASTLING_INITIAL_ROOK_SQUARE H1
 
-const square_t BLACK_KINGSIDE_CASTLING_SQUARE = G8;
-const square_t BLACK_KINGSIDE_CASTLING_INTERMEDIATE_SQUARE = F8;
-const square_t BLACK_KINGSIDE_CASTLING_INITIAL_ROOK_SQUARE = H8;
+#define WHITE_QUEENSIDE_CASTLING_SQUARE C1
+#define WHITE_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE B1
+#define WHITE_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE_2 D1
+#define WHITE_QUEENSIDE_CASTLING_INITIAL_ROOK_SQUARE A1
 
-const square_t BLACK_QUEENSIDE_CASTLING_SQUARE = C8;
-const square_t BLACK_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE = B8;
-const square_t BLACK_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE_2 = D8;
-const square_t BLACK_QUEENSIDE_CASTLING_INITIAL_ROOK_SQUARE = A8;
+#define BLACK_KINGSIDE_CASTLING_SQUARE G8
+#define BLACK_KINGSIDE_CASTLING_INTERMEDIATE_SQUARE F8
+#define BLACK_KINGSIDE_CASTLING_INITIAL_ROOK_SQUARE H8
+
+#define BLACK_QUEENSIDE_CASTLING_SQUARE C8
+#define BLACK_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE B8
+#define BLACK_QUEENSIDE_CASTLING_INTERMEDIATE_SQUARE_2 D8
+#define BLACK_QUEENSIDE_CASTLING_INITIAL_ROOK_SQUARE A8
 
 void _movegen_generate_king_regular(const board_t *board, move_t *out_moves, int *out_move_count, square_t from);
 void _movegen_generate_king_castling(const board_t *board, move_t *out_moves, int *out_move_count, square_t from);
@@ -33,14 +35,14 @@ void _movegen_generate_king_regular(const board_t *board, move_t *out_moves, int
 	file_t file = SQUARE_FILE(square);
 	rank_t rank = SQUARE_RANK(square);
 
-	movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file, rank + 1));
-	movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file, rank - 1));
-	movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file + 1, rank));
-	movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file - 1, rank));
-	movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file + 1, rank + 1));
-	movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file - 1, rank + 1));
-	movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file + 1, rank - 1));
-	movegen_add_if_target_empty_or_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file - 1, rank - 1));
+	movegen_add_cond(board, out_moves, out_move_count, move_regular(square, SQUARE_OF(file, rank + 1)), MG_COND_KING);
+	movegen_add_cond(board, out_moves, out_move_count, move_regular(square, SQUARE_OF(file, rank - 1)), MG_COND_KING);
+	movegen_add_cond(board, out_moves, out_move_count, move_regular(square, SQUARE_OF(file + 1, rank)), MG_COND_KING);
+	movegen_add_cond(board, out_moves, out_move_count, move_regular(square, SQUARE_OF(file - 1, rank)), MG_COND_KING);
+	movegen_add_cond(board, out_moves, out_move_count, move_regular(square, SQUARE_OF(file + 1, rank + 1)), MG_COND_KING);
+	movegen_add_cond(board, out_moves, out_move_count, move_regular(square, SQUARE_OF(file - 1, rank + 1)), MG_COND_KING);
+	movegen_add_cond(board, out_moves, out_move_count, move_regular(square, SQUARE_OF(file + 1, rank - 1)), MG_COND_KING);
+	movegen_add_cond(board, out_moves, out_move_count, move_regular(square, SQUARE_OF(file - 1, rank - 1)), MG_COND_KING);
 }
 
 void _movegen_generate_king_castling(const board_t *board, move_t *out_moves, int *out_move_count, square_t square)

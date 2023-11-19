@@ -25,6 +25,11 @@ typedef struct board_event
     castling_rights_t black_castling_rights;
     square_t en_passant_square;
     int halfmove_clock;
+
+    // TODO remove
+    piecepos_t white_piece_positions;
+    piecepos_t black_piece_positions;
+    
 } board_event_t;
 
 typedef struct board
@@ -48,7 +53,7 @@ typedef struct board
 
 /**
  * Initializes the board to the starting position.
- * 
+ *
  * @note This function must be called before any other board functions.
  *
  * @param board The board to initialize.
@@ -90,20 +95,5 @@ piece_t board_get(const board_t *board, square_t square);
  * @param piece The piece to set.
  */
 void board_set(board_t *board, square_t square, piece_t piece);
-
-/**
- * Moves a piece on the board.
- *
- * @param board The board to move the piece on.
- * @param move The move to make.
- */
-void board_make_move(board_t *board, move_t move);
-
-/**
- * Undoes the last move made on the board.
- *
- * @param board The board to undo the last move on.
- */
-void board_unmake_move(board_t *board);
 
 #endif

@@ -1,6 +1,7 @@
 #include "test_util.h"
 #include "board.h"
 #include "board_fen.h"
+#include "board_move.h"
 #include "movegen.h"
 
 void check_first_few_moves();
@@ -26,6 +27,16 @@ void check_first_few_moves()
 
 	board_init(&board);
 	movegen_generate(&board, moves, &move_count);
+
+	fprintf(stderr, "move_count = %d\n", move_count);
+	for (int i = 0; i < move_count; ++i)
+	{
+		char move_str[6];
+		move_to_uci(moves[i], move_str);
+		fprintf(stderr, "%s ", move_str);
+	}
+	fprintf(stderr, "\n");
+
 	if (move_count != 20)
 		test_error("Initial position did not have 20 (pseudo)legal moves");
 

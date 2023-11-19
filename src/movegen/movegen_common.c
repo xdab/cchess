@@ -1,34 +1,32 @@
 #include "movegen_common.h"
 
-int movegen_add_if_target_empty_or_enemy(const board_t *board, move_t *out_moves, int *out_move_count, square_t from, square_t to)
-{
-	if (SQUARE_VALID(to))
-	{
-		piece_t target = board_get(board, to);
-		bool is_empty = target == PIECE_NONE;
-		bool is_enemy = (target & SIDE_MASK) != board->side_to_move;
-		if (is_empty || is_enemy)
-		{
-			out_moves[*out_move_count] = move_regular(from, to);
-			(*out_move_count)++;
-			return is_empty ? ADDED_EMPTY : ADDED_ENEMY;
-		}
-	}
+#include <stdbool.h>
 
-	return NOT_ADDED;
+void movegen_add(move_t *out_moves, int *out_move_count, move_t move)
+{
+	out_moves[*out_move_count] = move;
+	(*out_move_count)++;
 }
 
-void movegen_add_if_target_enemy(const board_t *board, move_t *out_moves, int *out_move_count, square_t from, square_t to)
+int movegen_add_cond(const board_t *board, move_t *out_moves, int *out_move_count, move_t move, int condition)
 {
-	if (SQUARE_VALID(to))
+	if (move == MOVE_NULL)
+		return MG_NOT_ADDED;
+
+	piece_t target = board_get(board, move_get_to(move));
+	bool target_empty = (target == PIECE_NONE);
+
+	if ((condition & MG_EMPTY) && target_empty)
 	{
-		piece_t target = board_get(board, to);
-		bool is_empty = target == PIECE_NONE;
-		bool is_enemy = (target & SIDE_MASK) != board->side_to_move;
-		if (!is_empty && is_enemy)
-		{
-			out_moves[*out_move_count] = move_regular(from, to);
-			(*out_move_count)++;
-		}
+		movegen_add(out_moves, out_move_count, move);
+		return MG_EMPTY;
 	}
+
+	if ((condition & MG_ENEMY) && (!target_empty) && ((target & SIDE_MASK) != board->side_to_move))
+	{
+		movegen_add(out_moves, out_move_count, move);
+		return MG_ENEMY;
+	}
+
+	return MG_NOT_ADDED;
 }

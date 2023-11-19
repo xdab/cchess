@@ -1,6 +1,8 @@
 #include "movegen_pawn.h"
 #include "movegen_common.h"
 
+#define MG_PAWN_CAPTURE (MG_ENEMY)
+
 void _movegen_generate_white_pawn_pushes(const board_t *board, move_t *out_moves, int *out_move_count, square_t from);
 void _movegen_generate_white_pawn_captures(const board_t *board, move_t *out_moves, int *out_move_count, square_t from);
 void _movegen_generate_black_pawn_pushes(const board_t *board, move_t *out_moves, int *out_move_count, square_t from);
@@ -31,47 +33,24 @@ void _movegen_generate_white_pawn_pushes(const board_t *board, move_t *out_moves
 	{
 		if (board_get(board, in_front) == PIECE_NONE)
 		{
-			// Push 1
-			out_moves[*out_move_count] = move_regular(square, in_front);
-			(*out_move_count)++;
+			movegen_add(out_moves, out_move_count, move_regular(square, in_front));
 
 			square_t two_in_front = SQUARE_OF(file, RANK_4);
-			if (board_get(board, two_in_front) == PIECE_NONE)
-			{
-				// Push 2
-				out_moves[*out_move_count] = move_regular(square, two_in_front);
-				(*out_move_count)++;
-			}
+			movegen_add_cond(board, out_moves, out_move_count, move_regular(square, two_in_front), MG_EMPTY);
 		}
 	}
 	else if (rank < RANK_7)
 	{
-		if (board_get(board, in_front) == PIECE_NONE)
-		{
-			// Push 1
-			out_moves[*out_move_count] = move_regular(square, in_front);
-			(*out_move_count)++;
-		}
+		movegen_add_cond(board, out_moves, out_move_count, move_regular(square, in_front), MG_EMPTY);
 	}
 	else if (rank == RANK_7)
 	{
 		if (board_get(board, in_front) == PIECE_NONE)
 		{
-			// Push 1 and promote to queen
-			out_moves[*out_move_count] = move_promotion(square, in_front, QUEEN);
-			(*out_move_count)++;
-
-			// ... and promote to rook
-			out_moves[*out_move_count] = move_promotion(square, in_front, ROOK);
-			(*out_move_count)++;
-
-			// ... and promote to bishop
-			out_moves[*out_move_count] = move_promotion(square, in_front, BISHOP);
-			(*out_move_count)++;
-
-			// ... and promote to knight
-			out_moves[*out_move_count] = move_promotion(square, in_front, KNIGHT);
-			(*out_move_count)++;
+			movegen_add(out_moves, out_move_count, move_promotion(square, in_front, QUEEN));
+			movegen_add(out_moves, out_move_count, move_promotion(square, in_front, ROOK));
+			movegen_add(out_moves, out_move_count, move_promotion(square, in_front, BISHOP));
+			movegen_add(out_moves, out_move_count, move_promotion(square, in_front, KNIGHT));
 		}
 	}
 }
@@ -80,19 +59,32 @@ void _movegen_generate_white_pawn_captures(const board_t *board, move_t *out_mov
 {
 	file_t file = SQUARE_FILE(square);
 	rank_t rank = SQUARE_RANK(square);
-	int target_rank = rank + 1;
 
-	// Regular captures
-	movegen_add_if_target_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file + 1, target_rank));
-	movegen_add_if_target_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file - 1, target_rank));
+	square_t capture_square_1 = SQUARE_OF(file + 1, rank + 1);
+	square_t capture_square_2 = SQUARE_OF(file - 1, rank + 1);
 
-	// En passant capture
-	int en_passant_rank = SQUARE_RANK(board->en_passant_square);
-	int en_passant_file = SQUARE_FILE(board->en_passant_square);
-	if (en_passant_rank == target_rank && (en_passant_file == file + 1 || en_passant_file == file - 1))
+	if (rank == RANK_7)
 	{
-		out_moves[*out_move_count] = move_regular(square, board->en_passant_square);
-		(*out_move_count)++;
+		// Captures with promotion
+		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_1, QUEEN), MG_PAWN_CAPTURE);
+		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_1, ROOK), MG_PAWN_CAPTURE);
+		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_1, BISHOP), MG_PAWN_CAPTURE);
+		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_1, KNIGHT), MG_PAWN_CAPTURE);
+
+		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_2, QUEEN), MG_PAWN_CAPTURE);
+		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_2, ROOK), MG_PAWN_CAPTURE);
+		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_2, BISHOP), MG_PAWN_CAPTURE);
+		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_2, KNIGHT), MG_PAWN_CAPTURE);
+	}
+	else
+	{
+		// Regular captures
+		movegen_add_cond(board, out_moves, out_move_count, move_regular(square, capture_square_1), MG_PAWN_CAPTURE);
+		movegen_add_cond(board, out_moves, out_move_count, move_regular(square, capture_square_2), MG_PAWN_CAPTURE);
+
+		// En passant capture
+		if ((board->en_passant_square == capture_square_1) || (board->en_passant_square == capture_square_2))
+			movegen_add_cond(board, out_moves, out_move_count, move_regular(square, board->en_passant_square), MG_EMPTY);
 	}
 }
 
@@ -106,47 +98,24 @@ void _movegen_generate_black_pawn_pushes(const board_t *board, move_t *out_moves
 	{
 		if (board_get(board, in_front) == PIECE_NONE)
 		{
-			// Push 1
-			out_moves[*out_move_count] = move_regular(square, in_front);
-			(*out_move_count)++;
+			movegen_add(out_moves, out_move_count, move_regular(square, in_front));
 
 			square_t two_in_front = SQUARE_OF(file, RANK_5);
-			if (board_get(board, two_in_front) == PIECE_NONE)
-			{
-				// Push 2
-				out_moves[*out_move_count] = move_regular(square, two_in_front);
-				(*out_move_count)++;
-			}
+			movegen_add_cond(board, out_moves, out_move_count, move_regular(square, two_in_front), MG_EMPTY);
 		}
 	}
 	else if (rank > RANK_2)
 	{
-		if (board_get(board, in_front) == PIECE_NONE)
-		{
-			// Push 1
-			out_moves[*out_move_count] = move_regular(square, in_front);
-			(*out_move_count)++;
-		}
+		movegen_add_cond(board, out_moves, out_move_count, move_regular(square, in_front), MG_EMPTY);
 	}
 	else if (rank == RANK_2)
 	{
 		if (board_get(board, in_front) == PIECE_NONE)
 		{
-			// Push 1 and promote to queen
-			out_moves[*out_move_count] = move_promotion(square, in_front, QUEEN);
-			(*out_move_count)++;
-
-			// ... and promote to rook
-			out_moves[*out_move_count] = move_promotion(square, in_front, ROOK);
-			(*out_move_count)++;
-
-			// ... and promote to bishop
-			out_moves[*out_move_count] = move_promotion(square, in_front, BISHOP);
-			(*out_move_count)++;
-
-			// ... and promote to knight
-			out_moves[*out_move_count] = move_promotion(square, in_front, KNIGHT);
-			(*out_move_count)++;
+			movegen_add(out_moves, out_move_count, move_promotion(square, in_front, QUEEN));
+			movegen_add(out_moves, out_move_count, move_promotion(square, in_front, ROOK));
+			movegen_add(out_moves, out_move_count, move_promotion(square, in_front, BISHOP));
+			movegen_add(out_moves, out_move_count, move_promotion(square, in_front, KNIGHT));
 		}
 	}
 }
@@ -155,18 +124,31 @@ void _movegen_generate_black_pawn_captures(const board_t *board, move_t *out_mov
 {
 	file_t file = SQUARE_FILE(square);
 	rank_t rank = SQUARE_RANK(square);
-	int target_rank = rank - 1;
 
-	// Regular captures
-	movegen_add_if_target_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file + 1, target_rank));
-	movegen_add_if_target_enemy(board, out_moves, out_move_count, square, SQUARE_OF(file - 1, target_rank));
+	square_t capture_square_1 = SQUARE_OF(file + 1, rank - 1);
+	square_t capture_square_2 = SQUARE_OF(file - 1, rank - 1);
 
-	// En passant capture
-	int en_passant_rank = SQUARE_RANK(board->en_passant_square);
-	int en_passant_file = SQUARE_FILE(board->en_passant_square);
-	if (en_passant_rank == target_rank && (en_passant_file == file + 1 || en_passant_file == file - 1))
+	if (rank == RANK_2)
 	{
-		out_moves[*out_move_count] = move_regular(square, board->en_passant_square);
-		(*out_move_count)++;
+		// Captures with promotion
+		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_1, QUEEN), MG_PAWN_CAPTURE);
+		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_1, ROOK), MG_PAWN_CAPTURE);
+		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_1, BISHOP), MG_PAWN_CAPTURE);
+		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_1, KNIGHT), MG_PAWN_CAPTURE);
+		
+		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_2, QUEEN), MG_PAWN_CAPTURE);
+		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_2, ROOK), MG_PAWN_CAPTURE);
+		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_2, BISHOP), MG_PAWN_CAPTURE);
+		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_2, KNIGHT), MG_PAWN_CAPTURE);
+	}
+	else
+	{
+		// Regular captures
+		movegen_add_cond(board, out_moves, out_move_count, move_regular(square, capture_square_1), MG_PAWN_CAPTURE);
+		movegen_add_cond(board, out_moves, out_move_count, move_regular(square, capture_square_2), MG_PAWN_CAPTURE);
+
+		// En passant capture
+		if ((board->en_passant_square == capture_square_1) || (board->en_passant_square == capture_square_2))
+			movegen_add_cond(board, out_moves, out_move_count, move_regular(square, board->en_passant_square), MG_EMPTY);
 	}
 }

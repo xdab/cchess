@@ -2,28 +2,10 @@
 #include "board.h"
 #include <string.h>
 
-#define FROM_SQUARE_OFFSET 0
-#define TO_SQUARE_OFFSET 8
-#define PROMOTION_OFFSET 16
-
-#define SQUARE_MASK 0xFF
-#define PROMOTION_MASK 0x001F0000
-
 #define UCI_PROMOTION_QUEEN 'q'
 #define UCI_PROMOTION_ROOK 'r'
 #define UCI_PROMOTION_BISHOP 'b'
 #define UCI_PROMOTION_KNIGHT 'n'
-
-move_t move_regular(square_t from, square_t to)
-{
-    return ((move_t)from << FROM_SQUARE_OFFSET) | ((move_t)to << TO_SQUARE_OFFSET);
-}
-
-move_t move_promotion(square_t from, square_t to, piece_t promote_to)
-{
-    promote_to &= PIECE_MASK;
-    return move_regular(from, to) | ((move_t)promote_to << PROMOTION_OFFSET);
-}
 
 move_t move_uci(const char *uci)
 {
@@ -95,19 +77,4 @@ void move_to_uci(move_t move, char *uci)
     {
         uci[4] = '\0';
     }
-}
-
-square_t move_get_from(move_t move)
-{
-    return (move >> FROM_SQUARE_OFFSET) & SQUARE_MASK;
-}
-
-square_t move_get_to(move_t move)
-{
-    return (move >> TO_SQUARE_OFFSET) & SQUARE_MASK;
-}
-
-piece_t move_get_promoted_piece(move_t move)
-{
-    return (piece_t)((move & PROMOTION_MASK) >> PROMOTION_OFFSET);
 }

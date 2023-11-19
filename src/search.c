@@ -1,7 +1,10 @@
 #include "search.h"
+#include "board_move.h"
 #include "move.h"
 #include "movegen.h"
 #include "ttable.h"
+
+#include <stdbool.h>
 
 score_t alpha_beta(board_t *board, int depth, score_t alpha, score_t beta);
 score_t quiescence_search(board_t *board, score_t alpha, score_t beta);
@@ -87,6 +90,7 @@ score_t quiescence_search(board_t *board, score_t alpha, score_t beta)
 	int move_count;
 	movegen_generate(board, moves, &move_count);
 
+	bool no_captures = true;
 	for (int i = 0; i < move_count; i++)
 	{
 		move_t move = moves[i];
@@ -94,7 +98,10 @@ score_t quiescence_search(board_t *board, score_t alpha, score_t beta)
 
 		bool is_capture = captured_piece != PIECE_NONE;
 		if (!is_capture)
+		{
+			no_captures = false;
 			continue;
+		}
 
 		if (captured_piece & KING)
 			return VALUE_CHECKMATE;
@@ -109,6 +116,9 @@ score_t quiescence_search(board_t *board, score_t alpha, score_t beta)
 		if (score > alpha)
 			alpha = score;
 	}
+
+	if (no_captures)
+		return stand_pat;
 
 	return alpha;
 }
