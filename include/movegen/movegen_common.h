@@ -9,6 +9,9 @@
 #define ADDED_EMPTY 1
 #define ADDED_ENEMY 2
 
+#define MIN_MOVE_DISTANCE 1
+#define MAX_MOVE_DISTANCE 7
+
 /**
  * Adds a move to the array of moves if the target square is empty or contains an enemy piece.
  *
