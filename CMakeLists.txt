@@ -23,3 +23,4 @@ file(GLOB test_files test/*.c)
 foreach(test_file ${test_files})
 	add_unit_test(${test_file})
 endforeach(test_file)
+

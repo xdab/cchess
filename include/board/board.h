@@ -4,7 +4,6 @@
 #include "rank.h"
 #include "file.h"
 #include "piece.h"
-#include "piecepos.h"
 #include "side.h"
 #include "castling.h"
 #include "move.h"
@@ -17,6 +16,9 @@
 #define BOARD_HISTORY_SIZE 128
 #define BOARD_PIECE_COUNT L_PIECE_COUNT
 
+#define MAX_PAWNS 8
+#define MAX_PROMOTED_PIECES 8
+
 typedef struct board_event
 {
     move_t move;
@@ -26,17 +28,41 @@ typedef struct board_event
     square_t en_passant_square;
     int halfmove_clock;
 
-    // TODO remove
-    piecepos_t white_piece_positions;
-    piecepos_t black_piece_positions;
-    
 } board_event_t;
+
+typedef struct board_pieces
+{
+    square_t king;
+    square_t queen;
+    square_t kings_rook;
+    square_t queens_rook;
+    square_t kings_knight;
+    square_t queens_knight;
+    square_t kings_bishop;  // Light square bishop
+    square_t queens_bishop; // Dark square bishop
+
+    bool has_pawns;
+    square_t pawns[MAX_PAWNS];
+
+    bool has_promoted_pieces;
+    bool has_promoted_queens;
+    square_t promoted_queens[MAX_PROMOTED_PIECES];
+    bool has_promoted_rooks;
+    square_t promoted_rooks[MAX_PROMOTED_PIECES];
+    bool has_promoted_knights;
+    square_t promoted_knights[MAX_PROMOTED_PIECES];
+    bool has_promoted_bishops;
+    square_t promoted_bishops[MAX_PROMOTED_PIECES];
+} board_pieces_t;
 
 typedef struct board
 {
+    // Squares with pieces representation
     piece_t squares[SQUARE_COUNT];
-    piecepos_t white_piece_positions;
-    piecepos_t black_piece_positions;
+
+    // Pieces with squares representation
+    board_pieces_t white_pieces;
+    board_pieces_t black_pieces;
 
     side_t side_to_move;
     castling_rights_t white_castling_rights;

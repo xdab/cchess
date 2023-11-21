@@ -1,4 +1,6 @@
 #include "board.h"
+#include "board_pieces.h"
+
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
@@ -102,8 +104,8 @@ const square_t INITIAL_SQUARE_CONTENTS[SQUARE_COUNT] = {
 void board_init(board_t *board)
 {
     memcpy(board->squares, INITIAL_SQUARE_CONTENTS, SQUARE_COUNT);
-    piecepos_init_white(&board->white_piece_positions);
-    piecepos_init_black(&board->black_piece_positions);
+    board_pieces_init(&board->white_pieces, WHITE);
+    board_pieces_init(&board->black_pieces, BLACK);
 
     board->side_to_move = WHITE;
     board->white_castling_rights = CASTLING_RIGHTS_KINGSIDE | CASTLING_RIGHTS_QUEENSIDE;
@@ -119,8 +121,8 @@ void board_init(board_t *board)
 void board_clone(const board_t *board, board_t *clone)
 {
     memcpy(clone->squares, board->squares, SQUARE_COUNT);
-    memcpy(&clone->white_piece_positions, &board->white_piece_positions, sizeof(piecepos_t));
-    memcpy(&clone->black_piece_positions, &board->black_piece_positions, sizeof(piecepos_t));
+    memcpy(&clone->white_pieces, &board->white_pieces, sizeof(board_pieces_t));
+    memcpy(&clone->black_pieces, &board->black_pieces, sizeof(board_pieces_t));
 
     clone->side_to_move = board->side_to_move;
     clone->white_castling_rights = board->white_castling_rights;

@@ -19,9 +19,9 @@ score_t search(board_t *board, int depth, move_t *best_move)
 	{
 		move_t move = moves[i];
 
-		board_make_move(board, move);
+		board_move(board, move);
 		score_t score = -alpha_beta(board, depth - 1, -VALUE_CHECKMATE, VALUE_CHECKMATE);
-		board_unmake_move(board);
+		board_unmove(board);
 
 		if (score > best_score)
 		{
@@ -64,9 +64,9 @@ score_t alpha_beta(board_t *board, int depth, score_t alpha, score_t beta)
 			return VALUE_CHECKMATE;
 
 		// Search deeper
-		board_make_move(board, move);
+		board_move(board, move);
 		score_t score = -alpha_beta(board, depth - 1, -beta, -alpha);
-		board_unmake_move(board);
+		board_unmove(board);
 
 		// Update best score if needed
 		if (score > best_score)
@@ -121,9 +121,9 @@ score_t quiescence_search(board_t *board, score_t alpha, score_t beta)
 		if (captured_piece & KING)
 			return VALUE_CHECKMATE;
 
-		board_make_move(board, move);
+		board_move(board, move);
 		score_t score = -quiescence_search(board, -beta, -alpha);
-		board_unmake_move(board);
+		board_unmove(board);
 
 		if (score >= beta)
 			return beta;

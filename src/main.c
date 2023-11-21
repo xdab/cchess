@@ -42,11 +42,11 @@ int main(int argc, char *argv[])
 
     board_init(&board);
 
-    board_make_move(&board, move_regular(E2, E4));
-    board_make_move(&board, move_regular(E7, E5));
-    board_make_move(&board, move_regular(D1, H5));
-    board_make_move(&board, move_regular(B8, C6));
-    board_make_move(&board, move_regular(F1, C4));
+    board_move(&board, move_regular(E2, E4));
+    board_move(&board, move_regular(E7, E5));
+    board_move(&board, move_regular(D1, H5));
+    board_move(&board, move_regular(B8, C6));
+    board_move(&board, move_regular(F1, C4));
 
     score_t static_score = 0;
     while ((static_score > -10000) && (static_score < 10000))
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
         move_to_uci(best_move, best_move_uci);
         printf("Making move: %s\n", best_move_uci);
 
-        board_make_move(&board, best_move);
+        board_move(&board, best_move);
         nice_print(&board);
     }
 

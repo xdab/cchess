@@ -1,4 +1,5 @@
 #include "board_fen.h"
+#include "board_pieces.h"
 
 #include <ctype.h>
 
@@ -49,8 +50,7 @@ void board_set_fen(board_t *board, const char *fen)
 	int i = _set_piece_placement(board, fen);
 	i++;
 
-	piecepos_from_squares(&board->white_piece_positions, board->squares, WHITE);
-	piecepos_from_squares(&board->black_piece_positions, board->squares, BLACK);
+	board_pieces_full_update(board);
 
 	i += _set_side_to_move(board, fen + i);
 	i++;
