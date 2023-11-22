@@ -103,6 +103,14 @@ void board_clone(const board_t *board, board_t *clone);
 void board_print(const board_t *board, FILE *stream);
 
 /**
+ * Prints the board history to the specified stream.
+ *
+ * @param board The board to print the history from.
+ * @param stream The stream to print to.
+ */
+void board_print_history(const board_t *board, FILE *stream);
+
+/**
  * Gets the piece at the specified square.
  *
  * @param board The board to get the piece from.

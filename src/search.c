@@ -3,6 +3,7 @@
 #include "move.h"
 #include "movegen.h"
 #include "ttable.h"
+
 #include <stdbool.h>
 
 score_t alpha_beta(board_t *board, int depth, score_t alpha, score_t beta);
@@ -39,13 +40,13 @@ score_t alpha_beta(board_t *board, int depth, score_t alpha, score_t beta)
 	if (depth <= 0)
 		return quiescence_search(board, alpha, beta);
 
-	// ttable_entry_t retrieved_entry;
-	// ttable_retrieve(board->hash, &retrieved_entry);
-	// if ((retrieved_entry.hash == board->hash) && (retrieved_entry.depth >= depth))
-	// {
-	// 	if (retrieved_entry.type == TTABLE_ENTRY_EXACT)
-	// 		return retrieved_entry.score;
-	// }
+	ttable_entry_t retrieved_entry;
+	ttable_retrieve(board->hash, &retrieved_entry);
+	if ((retrieved_entry.hash == board->hash) && (retrieved_entry.depth >= depth))
+	{
+		if (retrieved_entry.type == TTABLE_ENTRY_EXACT)
+			return retrieved_entry.score;
+	}
 
 	move_t moves[MAX_MOVES];
 	int move_count;
@@ -84,13 +85,13 @@ score_t alpha_beta(board_t *board, int depth, score_t alpha, score_t beta)
 			alpha = best_score;
 	}
 
-	// ttable_entry_t entry_to_store;
-	// entry_to_store.hash = board->hash;
-	// entry_to_store.type = TTABLE_ENTRY_EXACT;
-	// entry_to_store.best_move = best_move;
-	// entry_to_store.score = best_score;
-	// entry_to_store.depth = depth;
-	// ttable_store(&entry_to_store);
+	ttable_entry_t entry_to_store;
+	entry_to_store.hash = board->hash;
+	entry_to_store.type = TTABLE_ENTRY_EXACT;
+	entry_to_store.best_move = best_move;
+	entry_to_store.score = best_score;
+	entry_to_store.depth = depth;
+	ttable_store(&entry_to_store);
 
 	return best_score;
 }

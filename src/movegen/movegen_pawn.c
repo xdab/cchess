@@ -83,7 +83,7 @@ void _movegen_generate_white_pawn_captures(const board_t *board, move_t *out_mov
 		movegen_add_cond(board, out_moves, out_move_count, move_regular(square, capture_square_2), MG_PAWN_CAPTURE);
 
 		// En passant capture
-		if ((board->en_passant_square == capture_square_1) || (board->en_passant_square == capture_square_2))
+		if (SQUARE_VALID(board->en_passant_square) && ((board->en_passant_square == capture_square_1) || (board->en_passant_square == capture_square_2)))
 			movegen_add_cond(board, out_moves, out_move_count, move_regular(square, board->en_passant_square), MG_EMPTY);
 	}
 }
@@ -135,7 +135,7 @@ void _movegen_generate_black_pawn_captures(const board_t *board, move_t *out_mov
 		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_1, ROOK), MG_PAWN_CAPTURE);
 		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_1, BISHOP), MG_PAWN_CAPTURE);
 		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_1, KNIGHT), MG_PAWN_CAPTURE);
-		
+
 		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_2, QUEEN), MG_PAWN_CAPTURE);
 		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_2, ROOK), MG_PAWN_CAPTURE);
 		movegen_add_cond(board, out_moves, out_move_count, move_promotion(square, capture_square_2, BISHOP), MG_PAWN_CAPTURE);
@@ -148,7 +148,7 @@ void _movegen_generate_black_pawn_captures(const board_t *board, move_t *out_mov
 		movegen_add_cond(board, out_moves, out_move_count, move_regular(square, capture_square_2), MG_PAWN_CAPTURE);
 
 		// En passant capture
-		if ((board->en_passant_square == capture_square_1) || (board->en_passant_square == capture_square_2))
+		if (SQUARE_VALID(board->en_passant_square) && ((board->en_passant_square == capture_square_1) || (board->en_passant_square == capture_square_2)))
 			movegen_add_cond(board, out_moves, out_move_count, move_regular(square, board->en_passant_square), MG_EMPTY);
 	}
 }

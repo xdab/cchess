@@ -211,6 +211,18 @@ void board_print(const board_t *board, FILE *stream)
     fputs(FILE_LEGEND, stream);
 }
 
+void board_print_history(const board_t *board, FILE *stream)
+{
+    for (int i = 0; i < board->history_size; i++)
+    {
+        move_t move = board->history[i].move;
+        char uci[6];
+        move_to_uci(move, uci);
+        fprintf(stream, "%s ", uci);
+    }
+    fputc(NEWLINE, stream);
+}
+
 piece_t board_get(const board_t *board, square_t square)
 {
     return board->squares[square];

@@ -2,6 +2,7 @@
 #include "board.h"
 #include "board_fen.h"
 #include "board_move.h"
+#include "board_pieces.h"
 #include "movegen.h"
 
 void check_first_few_moves();
@@ -15,6 +16,8 @@ int main(int argc, char const *argv[])
 
 	check_first_few_moves();
 	check_sample_position_1();
+	check_sample_position_2();
+	check_sample_position_3();
 
 	test_exit();
 }
@@ -27,15 +30,6 @@ void check_first_few_moves()
 
 	board_init(&board);
 	movegen_generate(&board, moves, &move_count);
-
-	fprintf(stderr, "move_count = %d\n", move_count);
-	for (int i = 0; i < move_count; ++i)
-	{
-		char move_str[6];
-		move_to_uci(moves[i], move_str);
-		fprintf(stderr, "%s ", move_str);
-	}
-	fprintf(stderr, "\n");
 
 	if (move_count != 20)
 		test_error("Initial position did not have 20 (pseudo)legal moves");
@@ -73,8 +67,8 @@ void check_sample_position_2()
 	// Anderssen vs Kieseritzky, 1851, position after 15. ... Qxf6
 	board_set_fen(&board, "rnb1kbnr/p2p1ppp/5q2/1p3N1P/4PBP1/3P1Q2/PPP5/RN3KR1 w kq - 1 16");
 	movegen_generate(&board, moves, &move_count);
-	if (move_count != 42)
-		test_error("In sample position 2 there were != 42 (pseudo)legal moves for white");
+	if (move_count != 47)
+		test_error("In sample position 2 there were != 47 (pseudo)legal moves for white");
 }
 
 void check_sample_position_3()

@@ -21,9 +21,6 @@ void check_free_queen_1()
 
 	board_print(&board, stderr);
 
-	fprintf(stderr, "black_piece_positions\n");
-	piecepos_print(&board.black_piece_positions, stderr);
-
 	const move_t best_move = move_regular(C3, D5);
 	for (int depth = 2; depth <= 5; depth++)
 	{

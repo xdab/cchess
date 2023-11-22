@@ -12,32 +12,48 @@ void board_move(board_t *board, move_t move)
 	square_t to = move_get_to(move);
 	piece_t captured_piece = board_get(board, to);
 
+
+	// Make sure the history array doesn't get too big
+	if (board->history_size == BOARD_HISTORY_SIZE)
+	{
+		memmove(&board->history[0], &board->history[1], (BOARD_HISTORY_SIZE - 1) * sizeof(board_event_t));
+		board->history_size--;
+	}
+
+	board->history[board->history_size].move = move;
+	board->history[board->history_size].captured_piece = captured_piece;
+	board->history[board->history_size].white_castling_rights = board->white_castling_rights;
+	board->history[board->history_size].black_castling_rights = board->black_castling_rights;
+	board->history[board->history_size].en_passant_square = board->en_passant_square;
+	board->history[board->history_size].halfmove_clock = board->halfmove_clock;
+	board->history_size++;
+	
 	board_pieces_move_update(board, move);
 
 	if (moved_piece & KING)
 	{
 		if (move == MOVE_WHITE_OO)
 		{
-			board_set(board, A1, PIECE_NONE);
-			board_set(board, D1, WHITE | ROOK);
-			board->white_castling_rights = CASTLING_RIGHTS_NONE;
-		}
-		else if (move == MOVE_BLACK_OO)
-		{
-			board_set(board, A8, PIECE_NONE);
-			board_set(board, D8, BLACK | ROOK);
-			board->black_castling_rights = CASTLING_RIGHTS_NONE;
-		}
-		else if (move == MOVE_WHITE_OOO)
-		{
 			board_set(board, H1, PIECE_NONE);
 			board_set(board, F1, WHITE | ROOK);
 			board->white_castling_rights = CASTLING_RIGHTS_NONE;
 		}
-		else if (move == MOVE_BLACK_OOO)
+		else if (move == MOVE_BLACK_OO)
 		{
 			board_set(board, H8, PIECE_NONE);
 			board_set(board, F8, BLACK | ROOK);
+			board->black_castling_rights = CASTLING_RIGHTS_NONE;
+		}
+		else if (move == MOVE_WHITE_OOO)
+		{
+			board_set(board, A1, PIECE_NONE);
+			board_set(board, D1, WHITE | ROOK);
+			board->white_castling_rights = CASTLING_RIGHTS_NONE;
+		}
+		else if (move == MOVE_BLACK_OOO)
+		{
+			board_set(board, A8, PIECE_NONE);
+			board_set(board, D8, BLACK | ROOK);
 			board->black_castling_rights = CASTLING_RIGHTS_NONE;
 		}
 	}
@@ -62,20 +78,6 @@ void board_move(board_t *board, move_t move)
 	board_set(board, from, PIECE_NONE);
 	board_set(board, to, (promoted_piece != PIECE_NONE) ? (promoted_piece | (moved_piece & SIDE_MASK)) : moved_piece);
 
-	// Make sure the history array doesn't get too big
-	if (board->history_size == BOARD_HISTORY_SIZE)
-	{
-		memmove(&board->history[0], &board->history[1], (BOARD_HISTORY_SIZE - 1) * sizeof(board_event_t));
-		board->history_size--;
-	}
-
-	board->history[board->history_size].move = move;
-	board->history[board->history_size].captured_piece = captured_piece;
-	board->history[board->history_size].white_castling_rights = board->white_castling_rights;
-	board->history[board->history_size].black_castling_rights = board->black_castling_rights;
-	board->history[board->history_size].en_passant_square = board->en_passant_square;
-	board->history[board->history_size].halfmove_clock = board->halfmove_clock;
-	board->history_size++;
 
 	board->side_to_move = (moved_piece & WHITE) ? BLACK : WHITE;
 	board->halfmove_clock = ((captured_piece != PIECE_NONE) || (moved_piece & PAWN)) ? 0 : (board->halfmove_clock + 1);
@@ -107,23 +109,23 @@ void board_unmove(board_t *board)
 	{
 		if (move == MOVE_WHITE_OO)
 		{
-			board_set(board, A1, WHITE | ROOK);
-			board_set(board, D1, PIECE_NONE);
-		}
-		else if (move == MOVE_BLACK_OO)
-		{
-			board_set(board, A8, BLACK | ROOK);
-			board_set(board, D8, PIECE_NONE);
-		}
-		else if (move == MOVE_WHITE_OOO)
-		{
 			board_set(board, H1, WHITE | ROOK);
 			board_set(board, F1, PIECE_NONE);
 		}
-		else if (move == MOVE_BLACK_OOO)
+		else if (move == MOVE_BLACK_OO)
 		{
 			board_set(board, H8, BLACK | ROOK);
 			board_set(board, F8, PIECE_NONE);
+		}
+		else if (move == MOVE_WHITE_OOO)
+		{
+			board_set(board, A1, WHITE | ROOK);
+			board_set(board, D1, PIECE_NONE);
+		}
+		else if (move == MOVE_BLACK_OOO)
+		{
+			board_set(board, A8, BLACK | ROOK);
+			board_set(board, D8, PIECE_NONE);
 		}
 	}
 

@@ -6,6 +6,7 @@
 #define CENTIPAWN_MULTIPLIER 100.0
 
 #define VALUE_CHECKMATE 100000
+#define VALUE_DRAW 0
 
 typedef int score_t;
 

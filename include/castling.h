@@ -1,7 +1,9 @@
 #ifndef CASTLING_H
 #define CASTLING_H
 
-typedef unsigned char castling_rights_t;
+#include <stdint.h>
+
+typedef uint8_t castling_rights_t;
 
 #define CASTLING_RIGHTS_NONE 0
 #define CASTLING_RIGHTS_KINGSIDE 1

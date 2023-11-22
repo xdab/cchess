@@ -12,8 +12,8 @@ typedef uint16_t move_t;
 #define TO_SQUARE_OFFSET 6
 #define PROMOTION_OFFSET 12
 
-#define SQUARE_MASK 0x3f
-#define PROMOTION_MASK 0x05
+#define SQUARE_MASK 0b00111111
+#define PROMOTION_MASK 0b00000111
 
 #define MOVE_NULL 0xffff
 
