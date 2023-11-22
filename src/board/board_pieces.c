@@ -453,6 +453,9 @@ void board_pieces_unmove_update(board_t *board, move_t move)
 		opponent = &board->white_pieces;
 	}
 
+	if (promoted_piece != PIECE_NONE)
+		moved_piece = PAWN | (moved_piece & SIDE_MASK);
+
 	// Restore player's piece to the 'from' square
 	switch (moved_piece & PIECE_MASK)
 	{
