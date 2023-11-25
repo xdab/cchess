@@ -132,27 +132,32 @@ score_t evaluate_relative(const board_t *board)
 score_t _eval_material(const board_t *board, side_t side)
 {
     score_t material_value = 0;
+    const board_pieces_t *pieces = (side & WHITE) ? &board->white_pieces : &board->black_pieces;
+    
+    const score_t *pawn_value_bonuses = (side & WHITE) ? WHITE_PAWN_VALUE_BONUSES : BLACK_PAWN_VALUE_BONUSES;
+    const score_t *bishop_value_bonuses = (side & WHITE) ? WHITE_BISHOP_VALUE_BONUSES : BLACK_BISHOP_VALUE_BONUSES;
+    const score_t *rook_value_bonuses = (side & WHITE) ? WHITE_ROOK_VALUE_BONUSES : BLACK_ROOK_VALUE_BONUSES;
+    const score_t *king_value_bonuses = (side & WHITE) ? WHITE_KING_VALUE_BONUSES : BLACK_KING_VALUE_BONUSES;
 
-    for (square_t square = SQUARE_MIN; square <= SQUARE_MAX; square++)
-    {
-        piece_t piece = board_get(board, square);
+    for (int i = 0; i < MAX_PAWNS; i++)
+        if (pieces->pawns[i] != SQUARE_NONE)
+            material_value += VALUE_PAWN + pawn_value_bonuses[pieces->pawns[i]];
 
-        if (!(piece & side))
-            continue;
+    for (int i = 0; i < MAX_KNIGHTS; i++)
+        if (pieces->knights[i] != SQUARE_NONE)
+            material_value += VALUE_KNIGHT + KNIGHT_VALUE_BONUSES[pieces->knights[i]];
+    
+    for (int i = 0; i < MAX_BISHOPS; i++)
+        if (pieces->bishops[i] != SQUARE_NONE)
+            material_value += VALUE_BISHOP + bishop_value_bonuses[pieces->bishops[i]];
+    
+    for (int i = 0; i < MAX_ROOKS; i++)
+        if (pieces->rooks[i] != SQUARE_NONE)
+            material_value += VALUE_ROOK + rook_value_bonuses[pieces->rooks[i]];
 
-        if ((piece & PAWN))
-            material_value += VALUE_PAWN + ((side & WHITE) ? WHITE_PAWN_VALUE_BONUSES : BLACK_PAWN_VALUE_BONUSES)[square];
-        else if (piece & KNIGHT)
-            material_value += VALUE_KNIGHT + KNIGHT_VALUE_BONUSES[square];
-        else if (piece & BISHOP)
-            material_value += VALUE_BISHOP + ((side & WHITE) ? WHITE_BISHOP_VALUE_BONUSES : BLACK_BISHOP_VALUE_BONUSES)[square];
-        else if (piece & ROOK)
-            material_value += VALUE_ROOK + ((side & WHITE) ? WHITE_ROOK_VALUE_BONUSES : BLACK_ROOK_VALUE_BONUSES)[square];
-        else if (piece & QUEEN)
-            material_value += VALUE_QUEEN + QUEEN_VALUE_BONUSES[square];
-        else if (piece & KING)
-            material_value += VALUE_KING + ((side & WHITE) ? WHITE_KING_VALUE_BONUSES : BLACK_KING_VALUE_BONUSES)[square];
-        }
+    for (int i = 0; i < MAX_QUEENS; i++)
+        if (pieces->queens[i] != SQUARE_NONE)
+            material_value += VALUE_QUEEN + QUEEN_VALUE_BONUSES[pieces->queens[i]];
 
     return material_value;
 }

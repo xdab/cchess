@@ -20,54 +20,25 @@ int _movegen_generate(const board_t *board, const board_pieces_t *pieces, move_t
 {
     int move_count = 0;
 
-    if (pieces->has_pawns)
-        for (int i = 0; i < 8; i++)
-            if (pieces->pawns[i] != SQUARE_NONE)
-                movegen_generate_pawn_moves(board, out_moves, &move_count, pieces->pawns[i]);
+    for (int i = 0; i < MAX_PAWNS; i++)
+        if (pieces->pawns[i] != SQUARE_NONE)
+            movegen_generate_pawn_moves(board, out_moves, &move_count, pieces->pawns[i]);
 
-    if (pieces->has_promoted_pieces)
-    {
-        if (pieces->has_promoted_queens)
-            for (int i = 0; i < 8; i++)
-                if (pieces->promoted_queens[i] != SQUARE_NONE)
-                    movegen_generate_queen_moves(board, out_moves, &move_count, pieces->promoted_queens[i]);
+    for (int i = 0; i < MAX_QUEENS; i++)
+        if (pieces->queens[i] != SQUARE_NONE)
+            movegen_generate_queen_moves(board, out_moves, &move_count, pieces->queens[i]);
 
-        if (pieces->has_promoted_rooks)
-            for (int i = 0; i < 8; i++)
-                if (pieces->promoted_rooks[i] != SQUARE_NONE)
-                    movegen_generate_rook_moves(board, out_moves, &move_count, pieces->promoted_rooks[i]);
+    for (int i = 0; i < MAX_ROOKS; i++)
+        if (pieces->rooks[i] != SQUARE_NONE)
+            movegen_generate_rook_moves(board, out_moves, &move_count, pieces->rooks[i]);
 
-        if (pieces->has_promoted_bishops)
-            for (int i = 0; i < 8; i++)
-                if (pieces->promoted_bishops[i] != SQUARE_NONE)
-                    movegen_generate_bishop_moves(board, out_moves, &move_count, pieces->promoted_bishops[i]);
+    for (int i = 0; i < MAX_BISHOPS; i++)
+        if (pieces->bishops[i] != SQUARE_NONE)
+            movegen_generate_bishop_moves(board, out_moves, &move_count, pieces->bishops[i]);
 
-        if (pieces->has_promoted_knights)
-            for (int i = 0; i < 8; i++)
-                if (pieces->promoted_knights[i] != SQUARE_NONE)
-                    movegen_generate_knight_moves(board, out_moves, &move_count, pieces->promoted_knights[i]);
-    }
-
-    if (pieces->queen != SQUARE_NONE)
-        movegen_generate_queen_moves(board, out_moves, &move_count, pieces->queen);
-
-    if (pieces->kings_rook != SQUARE_NONE)
-        movegen_generate_rook_moves(board, out_moves, &move_count, pieces->kings_rook);
-
-    if (pieces->queens_rook != SQUARE_NONE)
-        movegen_generate_rook_moves(board, out_moves, &move_count, pieces->queens_rook);
-
-    if (pieces->kings_bishop != SQUARE_NONE)
-        movegen_generate_bishop_moves(board, out_moves, &move_count, pieces->kings_bishop);
-
-    if (pieces->queens_bishop != SQUARE_NONE)
-        movegen_generate_bishop_moves(board, out_moves, &move_count, pieces->queens_bishop);
-
-    if (pieces->kings_knight != SQUARE_NONE)
-        movegen_generate_knight_moves(board, out_moves, &move_count, pieces->kings_knight);
-
-    if (pieces->queens_knight != SQUARE_NONE)
-        movegen_generate_knight_moves(board, out_moves, &move_count, pieces->queens_knight);
+    for (int i = 0; i < MAX_KNIGHTS; i++)
+        if (pieces->knights[i] != SQUARE_NONE)
+            movegen_generate_knight_moves(board, out_moves, &move_count, pieces->knights[i]);
 
     if (pieces->king != SQUARE_NONE)
         movegen_generate_king_moves(board, out_moves, &move_count, pieces->king);

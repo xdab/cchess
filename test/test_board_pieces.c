@@ -60,11 +60,11 @@ void check_knight_moves_from_initial_position()
 	board_init(&board);
 
 	board_move(&board, move_regular(B1, C3)); // 1. Nc3
-	if (board.white_pieces.queens_knight != C3)
+	if (board.white_pieces.knights[0] != C3)
 		test_error("After 1. Nc3, whites queens knight should be on c3");
 
 	board_unmove(&board);
-	if (board.white_pieces.queens_knight != B1)
+	if (board.white_pieces.knights[0] != B1)
 		test_error("After unmoving 1. Nc3, whites queens knight should be on b1");
 }
 
@@ -94,19 +94,19 @@ void check_sample_game_1()
 
 	if (board.white_pieces.king != G1)
 		test_error("In sample game 1, whites king should be on g1");
-	if (board.white_pieces.queen != D1)
+	if (board.white_pieces.queens[0] != D1)
 		test_error("In sample game 1, whites queen should be on d1");
-	if (board.white_pieces.queens_rook != A1)
+	if (board.white_pieces.rooks[0] != A1)
 		test_error("In sample game 1, whites queens rook should be on a1");
-	if (board.white_pieces.kings_rook != F1)
+	if (board.white_pieces.rooks[1] != F1)
 		test_error("In sample game 1, whites kings rook should be on f1");
-	if (board.white_pieces.queens_bishop != C1)
+	if (board.white_pieces.bishops[0] != C1)
 		test_error("In sample game 1, whites queens bishop should be on c1");
-	if (board.white_pieces.kings_bishop != B5)
+	if (board.white_pieces.bishops[1] != B5)
 		test_error("In sample game 1, whites kings bishop should be on b5");
-	if (board.white_pieces.queens_knight != C3)
+	if (board.white_pieces.knights[0] != C3)
 		test_error("In sample game 1, whites queens knight should be on c3");
-	if (board.white_pieces.kings_knight != F3)
+	if (board.white_pieces.knights[1] != F3)
 		test_error("In sample game 1, whites kings knight should be on f3");
 	if (board.white_pieces.pawns[FILE_A] != A2)
 		test_error("In sample game 1, whites a pawn should be on a2");
@@ -124,24 +124,22 @@ void check_sample_game_1()
 		test_error("In sample game 1, whites g pawn should be on g2");
 	if (board.white_pieces.pawns[FILE_H] != H2)
 		test_error("In sample game 1, whites h pawn should be on h2");
-	if (board.white_pieces.has_promoted_pieces)
-		test_error("In sample game 1, white should not have promoted pieces");
 
 	if (board.black_pieces.king != E8)
 		test_error("In sample game 1, blacks king should be on e8");
-	if (board.black_pieces.queen != D8)
+	if (board.black_pieces.queens[0] != D8)
 		test_error("In sample game 1, blacks queen should be on d8");
-	if (board.black_pieces.queens_rook != A8)
+	if (board.black_pieces.rooks[0] != A8)
 		test_error("In sample game 1, blacks queens rook should be on a8");
-	if (board.black_pieces.kings_rook != H8)
+	if (board.black_pieces.rooks[1] != H8)
 		test_error("In sample game 1, blacks kings rook should be on h8");
-	if (board.black_pieces.queens_bishop != C8)
+	if (board.black_pieces.bishops[0] != C8)
 		test_error("In sample game 1, blacks queens bishop should be on c8");
-	if (board.black_pieces.kings_bishop != G7)
+	if (board.black_pieces.bishops[1] != G7)
 		test_error("In sample game 1, blacks kings bishop should be on g7");
-	if (board.black_pieces.queens_knight != C6)
+	if (board.black_pieces.knights[0] != C6)
 		test_error("In sample game 1, blacks queens knight should be on c6");
-	if (board.black_pieces.kings_knight != E7)
+	if (board.black_pieces.knights[1] != E7)
 		test_error("In sample game 1, blacks kings knight should be on e7");
 	if (board.black_pieces.pawns[FILE_A] != A7)
 		test_error("In sample game 1, blacks a pawn should be on a7");
@@ -159,8 +157,6 @@ void check_sample_game_1()
 		test_error("In sample game 1, blacks g pawn should be on g6");
 	if (board.black_pieces.pawns[FILE_H] != H7)
 		test_error("In sample game 1, blacks h pawn should be on h7");
-	if (board.black_pieces.has_promoted_pieces)
-		test_error("In sample game 1, black should not have promoted pieces");
 
 	for (int i = 0; i < 18; i++)
 		board_unmove(&board);
@@ -184,9 +180,52 @@ void check_promotions()
 	board_move(&board, move_promotion(A7, B8, QUEEN));
 	board_unmove(&board);
 
-	if (board.white_pieces.has_promoted_pieces)
-		test_error("check_promotions: after unmaking axb8=Q there are still promoted pieces");
+	// White should not have a promoted queen on c8
 
-	if (board.black_pieces.kings_rook != B8)
+	// Black should have a rook on c8
+	if (board.black_pieces.rooks[0] != B8)
 		test_error("check_promotions: rook did not return to b8");
+
+	board_move(&board, move_promotion(C7, C8, QUEEN));
+	board_move(&board, move_regular(B8, C8));
+
+	fprintf(stderr, "\n\n----------------------------------------\n\n");
+	board_print(&board, stderr);
+	fprintf(stderr, "White pieces:\n");
+	board_pieces_print(&board.white_pieces, stderr);
+	fprintf(stderr, "\nBlack pieces:\n");
+	board_pieces_print(&board.black_pieces, stderr);
+
+	// White should not have a promoted queen on c8
+	// Black should have a rook on c8
+	if (board.black_pieces.rooks[0] != C8)
+		test_error("check_promotions: black rook is not on c8");
+
+	board_unmove(&board);
+
+	fprintf(stderr, "\n\n----------------------------------------\n\n");
+	board_print(&board, stderr);
+	fprintf(stderr, "White pieces:\n");
+	board_pieces_print(&board.white_pieces, stderr);
+	fprintf(stderr, "\nBlack pieces:\n");
+	board_pieces_print(&board.black_pieces, stderr);
+
+	board_unmove(&board);
+
+	fprintf(stderr, "\n\n----------------------------------------\n\n");
+	board_print(&board, stderr);
+	fprintf(stderr, "White pieces:\n");
+	board_pieces_print(&board.white_pieces, stderr);
+	fprintf(stderr, "\nBlack pieces:\n");
+	board_pieces_print(&board.black_pieces, stderr);
+
+	// White should not have a queen
+	if (board.white_pieces.queens[0] != SQUARE_NONE)
+		test_error("check_promotions: after unmaking the capture of the promoted queen there is still a queen");
+	// Black should have a rook on b8
+	if (board.black_pieces.rooks[0] != B8)
+		test_error("check_promotions: black rook is not on b8");
+	// White should have a pawn on c7
+	if (board.white_pieces.pawns[1] != C7)
+		test_error("check_promotions: white pawn is not on c7");
 }

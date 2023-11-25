@@ -16,8 +16,11 @@
 #define BOARD_HISTORY_SIZE 128
 #define BOARD_PIECE_COUNT L_PIECE_COUNT
 
+#define MAX_QUEENS 9
+#define MAX_ROOKS 10
+#define MAX_KNIGHTS 10
+#define MAX_BISHOPS 10
 #define MAX_PAWNS 8
-#define MAX_PROMOTED_PIECES 8
 
 typedef struct board_event
 {
@@ -33,26 +36,12 @@ typedef struct board_event
 typedef struct board_pieces
 {
     square_t king;
-    square_t queen;
-    square_t kings_rook;
-    square_t queens_rook;
-    square_t kings_knight;
-    square_t queens_knight;
-    square_t kings_bishop;  // Light square bishop
-    square_t queens_bishop; // Dark square bishop
-
-    bool has_pawns;
+    square_t queens[MAX_QUEENS];
+    square_t rooks[MAX_ROOKS];
+    square_t knights[MAX_KNIGHTS];
+    square_t bishops[MAX_BISHOPS];
     square_t pawns[MAX_PAWNS];
 
-    bool has_promoted_pieces;
-    bool has_promoted_queens;
-    square_t promoted_queens[MAX_PROMOTED_PIECES];
-    bool has_promoted_rooks;
-    square_t promoted_rooks[MAX_PROMOTED_PIECES];
-    bool has_promoted_knights;
-    square_t promoted_knights[MAX_PROMOTED_PIECES];
-    bool has_promoted_bishops;
-    square_t promoted_bishops[MAX_PROMOTED_PIECES];
 } board_pieces_t;
 
 typedef struct board

@@ -34,12 +34,11 @@ int main(int argc, char *argv[])
     return uci_loop();
 #else
     board_t board;
-    board_t work_board;
 
     zobrist_init();
 
-    const int tt_megabyte_factor = (1 << 20) / 24;
-    const int transposition_table_size = 64 * tt_megabyte_factor;
+    const unsigned long tt_megabyte_factor = (1 << 20) / sizeof(ttable_entry_t);
+    const unsigned long transposition_table_size = 1024 * tt_megabyte_factor;
     ttable_init(transposition_table_size);
 
     board_init(&board);
@@ -54,14 +53,13 @@ int main(int argc, char *argv[])
     while ((static_score > -10000) && (static_score < 10000))
     {
         static_score = evaluate(&board);
-        printf("Static score: %+d cp\n", static_score);
+        printf("Static score: %+.1f \n", static_score / CENTIPAWN_MULTIPLIER);
 
         score_t search_score;
         move_t best_move;
-        const int depth = 4;
-        board_clone(&board, &work_board);
-        search_score = search(&work_board, depth, &best_move);
-        printf("Score: %+d cp\n", search_score);
+        const int depth = 5;
+        search_score = search(&board, depth, &best_move);
+        printf("Score: %+.1f \n", search_score / CENTIPAWN_MULTIPLIER);
 
         char best_move_uci[6];
         move_to_uci(best_move, best_move_uci);

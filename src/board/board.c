@@ -124,13 +124,15 @@ void board_clone(const board_t *board, board_t *clone)
     memcpy(&clone->white_pieces, &board->white_pieces, sizeof(board_pieces_t));
     memcpy(&clone->black_pieces, &board->black_pieces, sizeof(board_pieces_t));
 
+    clone->history_size = board->history_size;
+    memcpy(clone->history, board->history, sizeof(board_event_t) * board->history_size);
+
     clone->side_to_move = board->side_to_move;
     clone->white_castling_rights = board->white_castling_rights;
     clone->black_castling_rights = board->black_castling_rights;
     clone->en_passant_square = board->en_passant_square;
     clone->halfmove_clock = board->halfmove_clock;
     clone->fullmove_number = board->fullmove_number;
-    clone->history_size = board->history_size;
     clone->hash = board->hash;
 }
 
@@ -213,6 +215,7 @@ void board_print(const board_t *board, FILE *stream)
 
 void board_print_history(const board_t *board, FILE *stream)
 {
+    fprintf(stream, "Last %d moves: ", board->history_size);
     for (int i = 0; i < board->history_size; i++)
     {
         move_t move = board->history[i].move;

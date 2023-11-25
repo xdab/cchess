@@ -42,18 +42,10 @@ static inline bool _board_pieces_any(square_t *squares, int square_count)
 
 void board_pieces_init(board_pieces_t *pieces, side_t side)
 {
+	memset(pieces, SQUARE_NONE, sizeof(board_pieces_t));
+
 	if (side & WHITE)
 	{
-		pieces->kings_rook = H1;
-		pieces->kings_knight = G1;
-		pieces->kings_bishop = F1;
-		pieces->king = E1;
-		pieces->queen = D1;
-		pieces->queens_bishop = C1;
-		pieces->queens_knight = B1;
-		pieces->queens_rook = A1;
-
-		pieces->has_pawns = true;
 		pieces->pawns[0] = A2;
 		pieces->pawns[1] = B2;
 		pieces->pawns[2] = C2;
@@ -62,19 +54,22 @@ void board_pieces_init(board_pieces_t *pieces, side_t side)
 		pieces->pawns[5] = F2;
 		pieces->pawns[6] = G2;
 		pieces->pawns[7] = H2;
+
+		pieces->knights[0] = B1;
+		pieces->knights[1] = G1;
+
+		pieces->bishops[0] = C1;
+		pieces->bishops[1] = F1;
+
+		pieces->rooks[0] = A1;
+		pieces->rooks[1] = H1;
+
+		pieces->queens[0] = D1;
+
+		pieces->king = E1;
 	}
 	else
 	{
-		pieces->kings_rook = H8;
-		pieces->kings_knight = G8;
-		pieces->kings_bishop = F8;
-		pieces->king = E8;
-		pieces->queen = D8;
-		pieces->queens_bishop = C8;
-		pieces->queens_knight = B8;
-		pieces->queens_rook = A8;
-
-		pieces->has_pawns = true;
 		pieces->pawns[0] = A7;
 		pieces->pawns[1] = B7;
 		pieces->pawns[2] = C7;
@@ -83,203 +78,82 @@ void board_pieces_init(board_pieces_t *pieces, side_t side)
 		pieces->pawns[5] = F7;
 		pieces->pawns[6] = G7;
 		pieces->pawns[7] = H7;
-	}
 
-	pieces->has_promoted_pieces = false;
-	memset(pieces->promoted_queens, SQUARE_NONE, sizeof(pieces->promoted_queens));
-	memset(pieces->promoted_rooks, SQUARE_NONE, sizeof(pieces->promoted_rooks));
-	memset(pieces->promoted_bishops, SQUARE_NONE, sizeof(pieces->promoted_bishops));
-	memset(pieces->promoted_knights, SQUARE_NONE, sizeof(pieces->promoted_knights));
-	pieces->has_promoted_queens = false;
-	pieces->has_promoted_rooks = false;
-	pieces->has_promoted_bishops = false;
-	pieces->has_promoted_knights = false;
+		pieces->knights[0] = B8;
+		pieces->knights[1] = G8;
+
+		pieces->bishops[0] = C8;
+		pieces->bishops[1] = F8;
+
+		pieces->rooks[0] = A8;
+		pieces->rooks[1] = H8;
+
+		pieces->queens[0] = D8;
+
+		pieces->king = E8;
+	}
 }
 
 void board_pieces_print(const board_pieces_t *pieces, FILE *stream)
 {
 	fprintf(stream, "King: %c%c\n", FILE_SYMBOL(SQUARE_FILE(pieces->king)), RANK_SYMBOL(SQUARE_RANK(pieces->king)));
 
-	if (pieces->queen != SQUARE_NONE)
-		fprintf(stream, "Queen: %c%c\n", FILE_SYMBOL(SQUARE_FILE(pieces->queen)), RANK_SYMBOL(SQUARE_RANK(pieces->queen)));
+	for (int i = 0; i < MAX_QUEENS; i++)
+		if (pieces->queens[i] != SQUARE_NONE)
+			fprintf(stream, "Queen: %c%c\n", FILE_SYMBOL(SQUARE_FILE(pieces->queens[i])), RANK_SYMBOL(SQUARE_RANK(pieces->queens[i])));
 
-	if (pieces->kings_rook != SQUARE_NONE)
-		fprintf(stream, "Kings rook: %c%c\n", FILE_SYMBOL(SQUARE_FILE(pieces->kings_rook)), RANK_SYMBOL(SQUARE_RANK(pieces->kings_rook)));
+	for (int i = 0; i < MAX_ROOKS; i++)
+		if (pieces->rooks[i] != SQUARE_NONE)
+			fprintf(stream, "Rook: %c%c\n", FILE_SYMBOL(SQUARE_FILE(pieces->rooks[i])), RANK_SYMBOL(SQUARE_RANK(pieces->rooks[i])));
 
-	if (pieces->queens_rook != SQUARE_NONE)
-		fprintf(stream, "Queens rook: %c%c\n", FILE_SYMBOL(SQUARE_FILE(pieces->queens_rook)), RANK_SYMBOL(SQUARE_RANK(pieces->queens_rook)));
+	for (int i = 0; i < MAX_BISHOPS; i++)
+		if (pieces->bishops[i] != SQUARE_NONE)
+			fprintf(stream, "Bishop: %c%c\n", FILE_SYMBOL(SQUARE_FILE(pieces->bishops[i])), RANK_SYMBOL(SQUARE_RANK(pieces->bishops[i])));
 
-	if (pieces->kings_knight != SQUARE_NONE)
-		fprintf(stream, "Kings knight: %c%c\n", FILE_SYMBOL(SQUARE_FILE(pieces->kings_knight)), RANK_SYMBOL(SQUARE_RANK(pieces->kings_knight)));
+	for (int i = 0; i < MAX_KNIGHTS; i++)
+		if (pieces->knights[i] != SQUARE_NONE)
+			fprintf(stream, "Knight: %c%c\n", FILE_SYMBOL(SQUARE_FILE(pieces->knights[i])), RANK_SYMBOL(SQUARE_RANK(pieces->knights[i])));
 
-	if (pieces->queens_knight != SQUARE_NONE)
-		fprintf(stream, "Queens knight: %c%c\n", FILE_SYMBOL(SQUARE_FILE(pieces->queens_knight)), RANK_SYMBOL(SQUARE_RANK(pieces->queens_knight)));
-
-	if (pieces->kings_bishop != SQUARE_NONE)
-		fprintf(stream, "Kings bishop: %c%c\n", FILE_SYMBOL(SQUARE_FILE(pieces->kings_bishop)), RANK_SYMBOL(SQUARE_RANK(pieces->kings_bishop)));
-
-	if (pieces->queens_bishop != SQUARE_NONE)
-		fprintf(stream, "Queens bishop: %c%c\n", FILE_SYMBOL(SQUARE_FILE(pieces->queens_bishop)), RANK_SYMBOL(SQUARE_RANK(pieces->queens_bishop)));
-
-	if (pieces->has_pawns)
-	{
-		fprintf(stream, "Pawns: ");
-		for (int i = 0; i < 8; i++)
-			if (pieces->pawns[i] != SQUARE_NONE)
-				fprintf(stream, "%c%c ", FILE_SYMBOL(SQUARE_FILE(pieces->pawns[i])), RANK_SYMBOL(SQUARE_RANK(pieces->pawns[i])));
-		fputc('\n', stream);
-	}
-
-	if (pieces->has_promoted_pieces)
-	{
-		fprintf(stream, "Promoted pieces:\n");
-		if (pieces->has_promoted_queens)
-		{
-			fprintf(stream, "Queens: ");
-			for (int i = 0; i < 8; i++)
-				if (pieces->promoted_queens[i] != SQUARE_NONE)
-					fprintf(stream, "%c%c ", FILE_SYMBOL(SQUARE_FILE(pieces->promoted_queens[i])), RANK_SYMBOL(SQUARE_RANK(pieces->promoted_queens[i])));
-			fputc('\n', stream);
-		}
-
-		if (pieces->has_promoted_rooks)
-		{
-			fprintf(stream, "Rooks: ");
-			for (int i = 0; i < 8; i++)
-				if (pieces->promoted_rooks[i] != SQUARE_NONE)
-					fprintf(stream, "%c%c ", FILE_SYMBOL(SQUARE_FILE(pieces->promoted_rooks[i])), RANK_SYMBOL(SQUARE_RANK(pieces->promoted_rooks[i])));
-			fputc('\n', stream);
-		}
-
-		if (pieces->has_promoted_bishops)
-		{
-			fprintf(stream, "Bishops: ");
-			for (int i = 0; i < 8; i++)
-				if (pieces->promoted_bishops[i] != SQUARE_NONE)
-					fprintf(stream, "%c%c ", FILE_SYMBOL(SQUARE_FILE(pieces->promoted_bishops[i])), RANK_SYMBOL(SQUARE_RANK(pieces->promoted_bishops[i])));
-			fputc('\n', stream);
-		}
-
-		if (pieces->has_promoted_knights)
-		{
-			fprintf(stream, "Knights: ");
-			for (int i = 0; i < 8; i++)
-				if (pieces->promoted_knights[i] != SQUARE_NONE)
-					fprintf(stream, "%c%c ", FILE_SYMBOL(SQUARE_FILE(pieces->promoted_knights[i])), RANK_SYMBOL(SQUARE_RANK(pieces->promoted_knights[i])));
-			fputc('\n', stream);
-		}
-	}
+	fprintf(stream, "Pawns: ");
+	for (int i = 0; i < MAX_PAWNS; i++)
+		if (pieces->pawns[i] != SQUARE_NONE)
+			fprintf(stream, "%c%c ", FILE_SYMBOL(SQUARE_FILE(pieces->pawns[i])), RANK_SYMBOL(SQUARE_RANK(pieces->pawns[i])));
+	fprintf(stream, "\n");
 }
 
 void board_pieces_full_update(board_t *board)
 {
 	memset(&board->white_pieces, SQUARE_NONE, sizeof(board_pieces_t));
 	memset(&board->black_pieces, SQUARE_NONE, sizeof(board_pieces_t));
-	board->white_pieces.has_pawns = board->black_pieces.has_pawns = false;
-	board->white_pieces.has_promoted_pieces = board->black_pieces.has_promoted_pieces = false;
-	board->white_pieces.has_promoted_queens = board->black_pieces.has_promoted_queens = false;
-	board->white_pieces.has_promoted_rooks = board->black_pieces.has_promoted_rooks = false;
-	board->white_pieces.has_promoted_bishops = board->black_pieces.has_promoted_bishops = false;
-	board->white_pieces.has_promoted_knights = board->black_pieces.has_promoted_knights = false;
 
 	for (square_t square = SQUARE_MIN; square <= SQUARE_MAX; square++)
 	{
 		piece_t piece = board->squares[square];
-
 		if (piece == PIECE_NONE)
 			continue;
 
 		board_pieces_t *pieces = (piece & BLACK) ? &board->black_pieces : &board->white_pieces;
 
-		if (piece & KING)
+		switch (piece & PIECE_MASK)
+		{
+		case PAWN:
+			_board_pieces_insert_at_free_square(pieces->pawns, MAX_PAWNS, square);
+			break;
+		case KNIGHT:
+			_board_pieces_insert_at_free_square(pieces->knights, MAX_KNIGHTS, square);
+			break;
+		case BISHOP:
+			_board_pieces_insert_at_free_square(pieces->bishops, MAX_BISHOPS, square);
+			break;
+		case ROOK:
+			_board_pieces_insert_at_free_square(pieces->rooks, MAX_ROOKS, square);
+			break;
+		case QUEEN:
+			_board_pieces_insert_at_free_square(pieces->queens, MAX_QUEENS, square);
+			break;
+		case KING:
 			pieces->king = square;
-
-		else if (piece & PAWN)
-		{
-			pieces->has_pawns = true;
-			for (int i = 0; i < 8; i++)
-				if (pieces->pawns[i] == SQUARE_NONE)
-				{
-					pieces->pawns[i] = square;
-					break;
-				}
-		}
-
-		else if (piece & KNIGHT)
-		{
-			if (pieces->kings_knight == SQUARE_NONE)
-				pieces->kings_knight = square;
-			else if (pieces->queens_knight == SQUARE_NONE)
-				pieces->queens_knight = square;
-			else
-			{
-				pieces->has_promoted_pieces = true;
-				pieces->has_promoted_knights = true;
-				for (int i = 0; i < 8; i++)
-					if (pieces->promoted_knights[i] == SQUARE_NONE)
-					{
-						pieces->promoted_knights[i] = square;
-						break;
-					}
-			}
-		}
-
-		else if (piece & BISHOP)
-		{
-			bool is_dark_square = SQUARE_DARK(square);
-			bool is_light_square = SQUARE_LIGHT(square);
-
-			if (is_light_square && (pieces->kings_bishop == SQUARE_NONE))
-				pieces->kings_bishop = square;
-			else if (is_dark_square && (pieces->queens_bishop == SQUARE_NONE))
-				pieces->queens_bishop = square;
-			else
-			{
-				pieces->has_promoted_pieces = true;
-				pieces->has_promoted_bishops = true;
-				for (int i = 0; i < 8; i++)
-					if (pieces->promoted_bishops[i] == SQUARE_NONE)
-					{
-						pieces->promoted_bishops[i] = square;
-						break;
-					}
-			}
-		}
-
-		else if (piece & ROOK)
-		{
-			if (pieces->kings_rook == SQUARE_NONE)
-				pieces->kings_rook = square;
-			else if (pieces->queens_rook == SQUARE_NONE)
-				pieces->queens_rook = square;
-			else
-			{
-				pieces->has_promoted_pieces = true;
-				pieces->has_promoted_rooks = true;
-				for (int i = 0; i < 8; i++)
-					if (pieces->promoted_rooks[i] == SQUARE_NONE)
-					{
-						pieces->promoted_rooks[i] = square;
-						break;
-					}
-			}
-		}
-
-		else if (piece & QUEEN)
-		{
-			if (pieces->queen == SQUARE_NONE)
-				pieces->queen = square;
-			else
-			{
-				pieces->has_promoted_pieces = true;
-				pieces->has_promoted_queens = true;
-				for (int i = 0; i < 8; i++)
-					if (pieces->promoted_queens[i] == SQUARE_NONE)
-					{
-						pieces->promoted_queens[i] = square;
-						break;
-					}
-			}
+			break;
 		}
 	}
 }
@@ -316,26 +190,20 @@ void board_pieces_move_update(board_t *board, move_t move)
 				int target_rank = SQUARE_RANK(to);
 				if ((promoted_piece != PIECE_NONE) && (target_rank == RANK_1 || target_rank == RANK_8)) // Check for promotion
 				{
-					char uci[6];
-					player->has_promoted_pieces = true;
 					player->pawns[i] = SQUARE_NONE; // Upon promotion the pawn is removed from the board
 					switch (promoted_piece)			// Instead, the promoted piece is added to the board at the square that the pawn would have moved to
 					{
 					case QUEEN:
-						player->has_promoted_queens = true;
-						_board_pieces_insert_at_free_square(player->promoted_queens, MAX_PROMOTED_PIECES, to);
+						_board_pieces_insert_at_free_square(player->queens, MAX_QUEENS, to);
 						break;
 					case ROOK:
-						player->has_promoted_rooks = true;
-						_board_pieces_insert_at_free_square(player->promoted_rooks, MAX_PROMOTED_PIECES, to);
+						_board_pieces_insert_at_free_square(player->rooks, MAX_ROOKS, to);
 						break;
 					case BISHOP:
-						player->has_promoted_bishops = true;
-						_board_pieces_insert_at_free_square(player->promoted_bishops, MAX_PROMOTED_PIECES, to);
+						_board_pieces_insert_at_free_square(player->bishops, MAX_BISHOPS, to);
 						break;
 					case KNIGHT:
-						player->has_promoted_knights = true;
-						_board_pieces_insert_at_free_square(player->promoted_knights, MAX_PROMOTED_PIECES, to);
+						_board_pieces_insert_at_free_square(player->knights, MAX_KNIGHTS, to);
 						break;
 					}
 				}
@@ -345,45 +213,27 @@ void board_pieces_move_update(board_t *board, move_t move)
 			}
 		break;
 	case KNIGHT:
-		if (player->kings_knight == from)
-			player->kings_knight = to;
-		else if (player->queens_knight == from)
-			player->queens_knight = to;
-		else
-			_board_pieces_insert_at_specific_square(player->promoted_knights, MAX_PROMOTED_PIECES, from, to);
+		_board_pieces_insert_at_specific_square(player->knights, MAX_KNIGHTS, from, to);
 		break;
 	case BISHOP:
-		if (player->kings_bishop == from)
-			player->kings_bishop = to;
-		else if (player->queens_bishop == from)
-			player->queens_bishop = to;
-		else
-			_board_pieces_insert_at_specific_square(player->promoted_bishops, MAX_PROMOTED_PIECES, from, to);
+		_board_pieces_insert_at_specific_square(player->bishops, MAX_BISHOPS, from, to);
 		break;
 	case ROOK:
-		if (player->kings_rook == from)
-			player->kings_rook = to;
-		else if (player->queens_rook == from)
-			player->queens_rook = to;
-		else
-			_board_pieces_insert_at_specific_square(player->promoted_rooks, MAX_PROMOTED_PIECES, from, to);
+		_board_pieces_insert_at_specific_square(player->rooks, MAX_ROOKS, from, to);
 		break;
 	case QUEEN:
-		if (player->queen == from)
-			player->queen = to;
-		else
-			_board_pieces_insert_at_specific_square(player->promoted_queens, MAX_PROMOTED_PIECES, from, to);
+		_board_pieces_insert_at_specific_square(player->queens, MAX_QUEENS, from, to);
 		break;
 	case KING:
 		player->king = to;
 		if (move == MOVE_WHITE_OO)
-			player->kings_rook = F1;
+			_board_pieces_insert_at_specific_square(player->rooks, MAX_ROOKS, H1, F1);
 		else if (move == MOVE_BLACK_OO)
-			player->kings_rook = F8;
+			_board_pieces_insert_at_specific_square(player->rooks, MAX_ROOKS, H8, F8);
 		else if (move == MOVE_WHITE_OOO)
-			player->queens_rook = D1;
+			_board_pieces_insert_at_specific_square(player->rooks, MAX_ROOKS, A1, D1);
 		else if (move == MOVE_BLACK_OOO)
-			player->queens_rook = D8;
+			_board_pieces_insert_at_specific_square(player->rooks, MAX_ROOKS, A8, D8);
 		break;
 	}
 
@@ -396,34 +246,16 @@ void board_pieces_move_update(board_t *board, move_t move)
 			_board_pieces_remove_at_specific_square(opponent->pawns, MAX_PAWNS, to);
 			break;
 		case KNIGHT:
-			if (opponent->kings_knight == to)
-				opponent->kings_knight = SQUARE_NONE;
-			else if (opponent->queens_knight == to)
-				opponent->queens_knight = SQUARE_NONE;
-			else
-				_board_pieces_remove_at_specific_square(opponent->promoted_knights, MAX_PROMOTED_PIECES, to);
+			_board_pieces_remove_at_specific_square(opponent->knights, MAX_KNIGHTS, to);
 			break;
 		case BISHOP:
-			if (opponent->kings_bishop == to)
-				opponent->kings_bishop = SQUARE_NONE;
-			else if (opponent->queens_bishop == to)
-				opponent->queens_bishop = SQUARE_NONE;
-			else
-				_board_pieces_remove_at_specific_square(opponent->promoted_bishops, MAX_PROMOTED_PIECES, to);
+			_board_pieces_remove_at_specific_square(opponent->bishops, MAX_BISHOPS, to);
 			break;
 		case ROOK:
-			if (opponent->kings_rook == to)
-				opponent->kings_rook = SQUARE_NONE;
-			else if (opponent->queens_rook == to)
-				opponent->queens_rook = SQUARE_NONE;
-			else
-				_board_pieces_remove_at_specific_square(opponent->promoted_rooks, MAX_PROMOTED_PIECES, to);
+			_board_pieces_remove_at_specific_square(opponent->rooks, MAX_ROOKS, to);
 			break;
 		case QUEEN:
-			if (opponent->queen == to)
-				opponent->queen = SQUARE_NONE;
-			else
-				_board_pieces_remove_at_specific_square(opponent->promoted_queens, MAX_PROMOTED_PIECES, to);
+			_board_pieces_remove_at_specific_square(opponent->queens, MAX_QUEENS, to);
 			break;
 		case KING: // Only happens because this is a "king capture" engine
 			opponent->king = SQUARE_NONE;
@@ -468,72 +300,45 @@ void board_pieces_unmove_update(board_t *board, move_t move)
 			switch (promoted_piece)
 			{
 			case QUEEN:
-				_board_pieces_remove_at_specific_square(player->promoted_queens, MAX_PROMOTED_PIECES, to);
-				if (!_board_pieces_any(player->promoted_queens, MAX_PROMOTED_PIECES))
-					player->has_promoted_queens = false;
+				_board_pieces_remove_at_specific_square(player->queens, MAX_QUEENS, to);
 				break;
 			case ROOK:
-				_board_pieces_remove_at_specific_square(player->promoted_rooks, MAX_PROMOTED_PIECES, to);
-				if (!_board_pieces_any(player->promoted_rooks, MAX_PROMOTED_PIECES))
-					player->has_promoted_rooks = false;
+				_board_pieces_remove_at_specific_square(player->rooks, MAX_ROOKS, to);
 				break;
 			case BISHOP:
-				_board_pieces_remove_at_specific_square(player->promoted_bishops, MAX_PROMOTED_PIECES, to);
-				if (!_board_pieces_any(player->promoted_bishops, MAX_PROMOTED_PIECES))
-					player->has_promoted_bishops = false;
+				_board_pieces_remove_at_specific_square(player->bishops, MAX_BISHOPS, to);
 				break;
 			case KNIGHT:
-				_board_pieces_remove_at_specific_square(player->promoted_knights, MAX_PROMOTED_PIECES, to);
-				if (!_board_pieces_any(player->promoted_knights, MAX_PROMOTED_PIECES))
-					player->has_promoted_knights = false;
+				_board_pieces_remove_at_specific_square(player->knights, MAX_KNIGHTS, to);
 				break;
 			}
-			player->has_promoted_pieces = player->has_promoted_queens || player->has_promoted_rooks || player->has_promoted_bishops || player->has_promoted_knights;
 
 			// ...and restore the pawn to the board
 			_board_pieces_insert_at_free_square(player->pawns, MAX_PAWNS, from);
 		}
 		break;
 	case KNIGHT:
-		if (player->kings_knight == to)
-			player->kings_knight = from;
-		else if (player->queens_knight == to)
-			player->queens_knight = from;
-		else
-			_board_pieces_insert_at_specific_square(player->promoted_knights, MAX_PROMOTED_PIECES, to, from);
+		_board_pieces_insert_at_specific_square(player->knights, MAX_KNIGHTS, to, from);
 		break;
 	case BISHOP:
-		if (player->kings_bishop == to)
-			player->kings_bishop = from;
-		else if (player->queens_bishop == to)
-			player->queens_bishop = from;
-		else
-			_board_pieces_insert_at_specific_square(player->promoted_bishops, MAX_PROMOTED_PIECES, to, from);
+		_board_pieces_insert_at_specific_square(player->bishops, MAX_BISHOPS, to, from);
 		break;
 	case ROOK:
-		if (player->kings_rook == to)
-			player->kings_rook = from;
-		else if (player->queens_rook == to)
-			player->queens_rook = from;
-		else
-			_board_pieces_insert_at_specific_square(player->promoted_rooks, MAX_PROMOTED_PIECES, to, from);
+		_board_pieces_insert_at_specific_square(player->rooks, MAX_ROOKS, to, from);
 		break;
 	case QUEEN:
-		if (player->queen == to)
-			player->queen = from;
-		else
-			_board_pieces_insert_at_specific_square(player->promoted_queens, MAX_PROMOTED_PIECES, to, from);
+		_board_pieces_insert_at_specific_square(player->queens, MAX_QUEENS, to, from);
 		break;
 	case KING:
 		player->king = from;
 		if (move == MOVE_WHITE_OO)
-			player->kings_rook = H1;
+			_board_pieces_insert_at_specific_square(player->rooks, MAX_ROOKS, F1, H1);
 		else if (move == MOVE_BLACK_OO)
-			player->kings_rook = H8;
+			_board_pieces_insert_at_specific_square(player->rooks, MAX_ROOKS, F8, H8);
 		else if (move == MOVE_WHITE_OOO)
-			player->queens_rook = A1;
+			_board_pieces_insert_at_specific_square(player->rooks, MAX_ROOKS, D1, A1);
 		else if (move == MOVE_BLACK_OOO)
-			player->queens_rook = A8;
+			_board_pieces_insert_at_specific_square(player->rooks, MAX_ROOKS, D8, A8);
 		break;
 	}
 
@@ -546,53 +351,20 @@ void board_pieces_unmove_update(board_t *board, move_t move)
 			_board_pieces_insert_at_free_square(opponent->pawns, MAX_PAWNS, to);
 			break;
 		case KNIGHT:
-			// Unfortunatelly, the knights are indistinguishable at this level
-			if (opponent->kings_knight == SQUARE_NONE)
-				opponent->kings_knight = to;
-			else if (opponent->queens_knight == SQUARE_NONE)
-				opponent->queens_knight = to;
-			else
-			{
-				_board_pieces_insert_at_free_square(opponent->promoted_knights, MAX_PROMOTED_PIECES, to);
-				opponent->has_promoted_knights = true;
-			}
+			_board_pieces_insert_at_free_square(opponent->knights, MAX_KNIGHTS, to);
 			break;
 		case BISHOP:
-			if (opponent->kings_bishop == SQUARE_NONE)
-				opponent->kings_bishop = to;
-			else if (opponent->queens_bishop == SQUARE_NONE)
-				opponent->queens_bishop = to;
-			else
-			{
-				_board_pieces_insert_at_free_square(opponent->promoted_bishops, MAX_PROMOTED_PIECES, to);
-				opponent->has_promoted_bishops = true;
-			}
+			_board_pieces_insert_at_free_square(opponent->bishops, MAX_BISHOPS, to);
 			break;
 		case ROOK:
-			// Unfortunatelly, the rooks are indistinguishable at this level
-			if (opponent->kings_rook == SQUARE_NONE)
-				opponent->kings_rook = to;
-			else if (opponent->queens_rook == SQUARE_NONE)
-				opponent->queens_rook = to;
-			else
-			{
-				_board_pieces_insert_at_free_square(opponent->promoted_rooks, MAX_PROMOTED_PIECES, to);
-				opponent->has_promoted_rooks = true;
-			}
+			_board_pieces_insert_at_free_square(opponent->rooks, MAX_ROOKS, to);
 			break;
 		case QUEEN:
-			if (opponent->queen == SQUARE_NONE)
-				opponent->queen = to;
-			else
-			{
-				_board_pieces_insert_at_free_square(opponent->promoted_queens, MAX_PROMOTED_PIECES, to);
-				opponent->has_promoted_queens = true;
-			}
+			_board_pieces_insert_at_free_square(opponent->queens, MAX_QUEENS, to);
 			break;
 		case KING: // Explained in board_pieces_move_update()
 			opponent->king = to;
 			break;
 		}
-		opponent->has_promoted_pieces = opponent->has_promoted_queens || opponent->has_promoted_rooks || opponent->has_promoted_bishops || opponent->has_promoted_knights;
 	}
 }

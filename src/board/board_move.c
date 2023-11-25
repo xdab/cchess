@@ -12,7 +12,6 @@ void board_move(board_t *board, move_t move)
 	square_t to = move_get_to(move);
 	piece_t captured_piece = board_get(board, to);
 
-
 	// Make sure the history array doesn't get too big
 	if (board->history_size == BOARD_HISTORY_SIZE)
 	{
@@ -27,7 +26,7 @@ void board_move(board_t *board, move_t move)
 	board->history[board->history_size].en_passant_square = board->en_passant_square;
 	board->history[board->history_size].halfmove_clock = board->halfmove_clock;
 	board->history_size++;
-	
+
 	board_pieces_move_update(board, move);
 
 	if (moved_piece & KING)
@@ -77,7 +76,6 @@ void board_move(board_t *board, move_t move)
 
 	board_set(board, from, PIECE_NONE);
 	board_set(board, to, (promoted_piece != PIECE_NONE) ? (promoted_piece | (moved_piece & SIDE_MASK)) : moved_piece);
-
 
 	board->side_to_move = (moved_piece & WHITE) ? BLACK : WHITE;
 	board->halfmove_clock = ((captured_piece != PIECE_NONE) || (moved_piece & PAWN)) ? 0 : (board->halfmove_clock + 1);
