@@ -1,8 +1,8 @@
 #include "eval.h"
 
 #define VALUE_PAWN 100
-#define VALUE_KNIGHT 300
-#define VALUE_BISHOP 300
+#define VALUE_KNIGHT 320
+#define VALUE_BISHOP 330
 #define VALUE_ROOK 500
 #define VALUE_QUEEN 900
 #define VALUE_KING 20000

@@ -58,7 +58,11 @@ int main(int argc, char *argv[])
         score_t search_score;
         move_t best_move;
         const int depth = 5;
+
         search_score = search(&board, depth, &best_move);
+        printf("AB-Nodes searched: %d \n", nodes);
+        printf("QS-Nodes searched: %d \n", qs_nodes);
+        printf("TT hits: %d \n", ttable_hits);
         printf("Score: %+.1f \n", search_score / CENTIPAWN_MULTIPLIER);
 
         char best_move_uci[6];

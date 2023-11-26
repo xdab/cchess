@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-static inline void _board_pieces_insert_at_free_square(square_t *squares, int square_count, square_t value)
+void _board_pieces_insert_at_free_square(square_t *squares, int square_count, square_t value)
 {
 	for (int i = 0; i < square_count; i++)
 		if (squares[i] == SQUARE_NONE)
@@ -12,7 +12,7 @@ static inline void _board_pieces_insert_at_free_square(square_t *squares, int sq
 		}
 }
 
-static inline void _board_pieces_insert_at_specific_square(square_t *squares, int square_count, square_t prev, square_t new)
+void _board_pieces_insert_at_specific_square(square_t *squares, int square_count, square_t prev, square_t new)
 {
 	for (int i = 0; i < square_count; i++)
 		if (squares[i] == prev)
@@ -22,7 +22,7 @@ static inline void _board_pieces_insert_at_specific_square(square_t *squares, in
 		}
 }
 
-static inline void _board_pieces_remove_at_specific_square(square_t *squares, int square_count, square_t value)
+void _board_pieces_remove_at_specific_square(square_t *squares, int square_count, square_t value)
 {
 	for (int i = 0; i < square_count; i++)
 		if (squares[i] == value)
@@ -30,14 +30,6 @@ static inline void _board_pieces_remove_at_specific_square(square_t *squares, in
 			squares[i] = SQUARE_NONE;
 			break;
 		}
-}
-
-static inline bool _board_pieces_any(square_t *squares, int square_count)
-{
-	for (int i = 0; i < square_count; i++)
-		if (squares[i] != SQUARE_NONE)
-			return true;
-	return false;
 }
 
 void board_pieces_init(board_pieces_t *pieces, side_t side)
